@@ -23,7 +23,6 @@ This is not a native standalone Switch executable, a new console connection engi
   </tr>
 </table>
 
-<p align="center"><sub>Cropped captures from the real offscreen Linux application at 720p. No video playback was started. Click an image to enlarge.</sub></p>
 
 ## Streaming engine
 
@@ -87,6 +86,8 @@ Use an archive matching the host architecture. The installer preserves existing 
 Stop the affected console session first. Add `--replace` when replacing an installed module, and `--with-runtime` when supplying the matching offline runtime. The previous complete module is kept under the platform's private `data/module-backups/vacootube/`. No console keyboard commands are sent by this file installer.
 
 ## Start and controls
+
+After the initial platform and module setup, **all player controls are handled on the console**: browsing, search with the on-screen keyboard, playback, settings and returning to IZlauncher. The PC runs the application and streaming in the background; no PC keyboard or mouse is needed for normal player operation.
 
 Select/load **VacooTube** in IZ2S App library, then open VacooTube on Switch. The separate Controllers module is not required just to navigate this player: its input goes directly to the owned page, not through a virtual PC gamepad.
 
