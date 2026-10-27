@@ -1,22 +1,14 @@
 # VacooTube 1.4.0
 
-Local GitHub preparation candidate; not published. Requires IZ2S Platform
-0.16.0-rc.3 or newer with the console stream-menu extension.
+First public VacooTube module release for NS2 and IZ2S Platform.
 
-- Bundle the full RUN13 render engine and a complete RUN16 alternative.
-- Double Minus opens the hidden console overlay: Continue, Render resolution,
-  Render engine, Return to launcher.
-- Default: RUN13, 720p. Render sizes: 1080p, 720p, 540p, 480p, 360p, 240p.
-- Live engine switching joins the old renderer before starting another,
-  preserves render resolution and keeps the player/audio alive.
-- Native touch follows the actual render surface; audio remains module-owned.
-- Install independently from BlitBun; no installed streaming-module dependency.
+- Independent installation under `modules/VacooTube/`; the required BlitBun streaming implementation is bundled.
+- Complete fork application source, controller/touch integration and a silent PC audio path.
+- RUN13 and RUN16 render engines, selectable from the hidden double-Minus console menu.
+- Live render resolutions from 1080p to 240p, defaulting to 720p; source-video quality separately defaults to 480p.
+- Linux x64 offline archive with Electron and prepared production dependencies; a smaller source archive is also available.
+- Real local application screenshots and direct links to this repository and its releases.
 
-Source-video quality remains a separate 480p preference. The source archive
-installs the app/runtime on demand; the Linux x64 offline archive includes the
-prepared source dependencies and official Electron runtime, without user data.
+Requires IZ2S Platform 0.16.0-rc.3 or newer and a working console session. Linux ARM64 is a declared source-install target with incomplete physical validation. Windows and macOS console streaming are unsupported. Local application startup, input/capture, packaging and installation checks do not establish physical-console performance guarantees.
 
-See VALIDATION.md and docs/render-engine.md for local check coverage and hardware
-limits. Original upstream attribution and license notices remain intact.
-
-- License independently authored IZMYSH code under GPL-2.0-or-later; retain explicit component terms and prior grants.
+The application is a fork of VacuumTube. Original MIT notices and component licenses are retained; independently authored IZMYSH integration uses GPL-2.0-or-later. See COPYRIGHT, LICENSE-SCOPE.md and THIRD_PARTY.json.

@@ -55,7 +55,7 @@ async function render() {
         openPage,
         goBack,
         translation: localeProvider.getTranslation(),
-        openTranslation: () => shell.openExternal('https://github.com/byizmysh/IZlauncher')
+        openTranslation: () => shell.openExternal('https://github.com/byizmysh/VacooTube')
     }
 
     let view;

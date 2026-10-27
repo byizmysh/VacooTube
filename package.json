@@ -11,5 +11,13 @@
     "pack": "node tools/module.cjs pack",
     "release": "node tools/module.cjs release"
   },
-  "license": "GPL-2.0-or-later"
+  "license": "GPL-2.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/byizmysh/VacooTube.git"
+  },
+  "homepage": "https://github.com/byizmysh/VacooTube#readme",
+  "bugs": {
+    "url": "https://github.com/byizmysh/VacooTube/issues"
+  }
 }

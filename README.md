@@ -1,18 +1,35 @@
 # VacooTube
 
-<img src="assets/icon-master.png" width="144" alt="VacooTube — a glowing video lamp">
+<p align="center"><img src="assets/icon-master.png" width="120" alt="VacooTube — a glowing video lamp"></p>
 
 **A small screen. A long watchlist.**
 
-VacooTube is a video-player project for **Switch 2 / NS2**, running on a Linux PC and controlled from the console through **IZ2S Platform** and **IZlauncher**. It uses a console/TV-style YouTube interface with touch and controller input.
+VacooTube is a video-player project for **Switch 2 / NS2**, running on a Linux PC and controlled from the console through **[IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform)** and **IZlauncher**. It uses a console/TV-style YouTube interface with touch and controller input.
 
 **This is a fork of [VacuumTube](https://github.com/shy1132/VacuumTube), adapted for NS2 and IZ2S.** The application source is included in `app/`; original copyright/MIT terms are preserved in `app/LICENSE`, and source revision/changes are recorded in [THIRD_PARTY.json](THIRD_PARTY.json).
 
 This is not a native standalone Switch executable, a new console connection engine or a console emulator. The desktop application executes on the PC; the existing console session presents its video/audio and supplies input.
 
+## A quick look
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <a href="docs/images/navigation.jpg"><img src="docs/images/navigation.jpg" width="420" alt="VacooTube home screen with its left navigation menu"></a><br>
+      <sub><strong>Familiar navigation</strong><br>Use the left sidebar to browse the home screen and player sections.</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="docs/images/search-results.jpg"><img src="docs/images/search-results.jpg" width="420" alt="VacooTube showing search results for cats being dramatic"></a><br>
+      <sub><strong>Browse videos</strong><br>A TV-style interface with large cards and familiar navigation.</sub>
+    </td>
+  </tr>
+</table>
+
+<p align="center"><sub>Cropped captures from the real offscreen Linux application at 720p. No video playback was started. Click an image to enlarge.</sub></p>
+
 ## Streaming engine
 
-VacooTube uses **BlitBun** as its streaming engine for frame encoding, packet compression and video/audio delivery to Switch 2. The required engine implementation is bundled inside VacooTube under `server/streaming/`; installing the separate BlitBun module is not required. Each project can be installed and updated independently. Cross-repository links will be added when the repositories are published.
+VacooTube uses **BlitBun** as its streaming engine for frame encoding, packet compression and video/audio delivery to Switch 2. The required engine implementation is bundled inside VacooTube under `server/streaming/`; installing the separate BlitBun module is not required. Each project can be installed and updated independently. [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform) is the required host platform; this repository contains the player and its bundled streaming integration.
 
 ## How it works
 
@@ -36,7 +53,7 @@ See [supported hosts and validation limits](SUPPORT.md). Windows and macOS conso
 
 ## Install
 
-First install IZ2S Platform. VacooTube is independent: BlitBun is not required. Then clone/download this repository or extract a release archive. From this folder:
+First install [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform/releases/latest). VacooTube is independent: BlitBun is not required. Download the Linux x64 offline package or the source package from [Releases](https://github.com/byizmysh/VacooTube/releases/latest), then extract it. From this folder:
 
 ```sh
 IZ2S="/absolute/path/to/iz2s-platform"
@@ -78,9 +95,17 @@ Select/load **VacooTube** in IZ2S App library, then open VacooTube on Switch. Th
 - **Touch:** native touch start/move/end events for navigation, scrolling and the on-screen keyboard.
 - **D-pad / left stick:** navigation.
 - **A:** confirm; **B:** back; **X:** play/pause.
-- **Menu / Minus:** use the module's visible menu and current shell hints for resume/exit. Game-specific BlitBun double-Minus rules should not be assumed to replace every player control.
+- **Double-tap Minus:** open the hidden module menu to resume, change render resolution or render engine, or return to IZlauncher.
 
 First-run/account/consent pages appear on the Switch. Handle them yourself. The host bridge does not require a public debugger/HTTP input port; it uses private inherited pipes scoped to the owned app.
+
+### Going back and returning to IZlauncher
+
+- **B on Switch** sends **Escape** to the player: it goes back one screen or closes the current view. It is not the keyboard letter `b`.
+- **On-screen Back arrow** provides the same visible way out of the search view.
+- **Home** in YouTube's left sidebar returns directly to the player home screen. Back is history-based and may require more than one press.
+- **Double-tap Minus → Return to launcher** exits VacooTube to IZlauncher. Back inside YouTube does not close the module.
+- **Backspace** is context-dependent and can delete search text; do not rely on it as a universal Home command.
 
 ## Video and audio modes
 
@@ -123,7 +148,7 @@ node tools/module.cjs release --platform "$IZ2S" --with-runtime
 
 The portable IZM contains both integration source halves, including the app source, but excludes runtime binaries, npm dependency directories and personal data. Only its declared console files are uploaded to Switch. Large dependencies belong beside their module, not in the console payload.
 
-Updates are managed as versioned IZ2S module releases. The fork does not check/install the original application's update feed. Until its own public repository/release location is configured, project/help buttons point to the existing IZ2S platform repository rather than an invented download URL.
+Updates are managed as versioned IZ2S module releases. The fork does not check/install the original application's update feed. Project/help buttons open this repository; manual download actions open its Releases page. Updates remain deliberate module installations, not automatic application replacements.
 
 [Installation and troubleshooting](docs/OPERATIONS.md) · [Application source guide](app/README.md) · [License inventory](THIRD_PARTY.json).
 
