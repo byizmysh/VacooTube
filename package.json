@@ -1,8 +1,8 @@
 {
   "name": "vacootube",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
-  "description": "Independent video player for Switch 2 \u00b7 touch and controller input",
+  "description": "Independent video player for Switch 2 · touch and controller input",
   "engines": {
     "node": ">=22"
   },

@@ -22,13 +22,13 @@ A new Switch session is required to validate the new loaded module version and i
 - The private isolated Linux fixture masked the other media module: VacooTube’s own Electron/media bridge produced a hidden frame, trusted touch events and nonzero audio. The normal online fork application entry point was not exercised by this local fixture.
 - A new physical Switch/gameplay/FPS validation was not performed as part of this packaging change.
 
-## RUN12-compatible cadence — 1.3.2
+## Earlier compatible frame pacing — 1.3.2
 
-The BC1 JavaScript codec and WASM binary were compared byte-for-byte with the RUN12 snapshot and match. The original scheduler, ACK-based capture pacing and WASM encoder worker were ported with module-local paths and a current-route readiness barrier. Six original bounded-queue/slow-ACK/profile-change/failure/close/recovery tests pass. The current decoder/wire ABI remains unchanged. Online video smoothness and physical-console FPS need the same-source comparison after reloading the module; a scheduler port is not proof of the reported stutter’s cause.
+The BC1 JavaScript codec and WASM binary were compared byte-for-byte with the earlier source snapshot and match. The original scheduler, ACK-based capture pacing and WASM encoder worker were ported with module-local paths and a current-route readiness barrier. Six original bounded-queue/slow-ACK/profile-change/failure/close/recovery tests pass. The current decoder/wire ABI remains unchanged. Online video smoothness and physical-console FPS need the same-source comparison after reloading the module; a scheduler port is not proof of the reported stutter’s cause.
 
-## Complete RUN13 render engine — 1.4.0
+## Complete Classic render engine — 1.4.0
 
-- Copied the RUN13 scheduler, WASM BC1 encoder, delta compression worker, transport, receiver programs and their own ABI/client/frame-builder dependencies. Original hashes are recorded. The current audio, capture integration and RUN16 menu design are retained.
+- Copied the Classic scheduler, WASM BC1 encoder, delta compression worker, transport, receiver programs and their own ABI/client/frame-builder dependencies. Original hashes are recorded. The current audio, capture integration and menu design are retained.
 - The active render dependency graph is entirely module-local apart from Node.js builtins and the injected platform session interface; see docs/render-dependencies.json. Removed the remaining direct Controllers-module import from native touch input.
 - All 24 original renderer/codec/compression/native-model tests passed, plus five current capture/recovery tests and three new resolution/touch/parser tests.
 - Console shaders compiled with VacooTube alone, with BlitBun and with the GTA module, without conflicting shared shader fragments.
@@ -37,8 +37,8 @@ The BC1 JavaScript codec and WASM binary were compared byte-for-byte with the RU
 
 ### Second renderer and overlay selection
 
-- Bundled the complete RUN16 render dependency closure beside the RUN13 implementation. Original hashes and the source commit are recorded in `server/streaming/run16/ORIGIN.json`; no BlitBun module files were modified.
+- Bundled the complete Advanced render dependency closure beside the Classic implementation. Original hashes and the source commit are recorded in `server/streaming/run16/ORIGIN.json`; no BlitBun module files were modified.
 - Six focused lifecycle/settings/resolution/input tests passed. The lifecycle test verifies that failed receiver shutdown prevents a new transport from starting and that preparation and pending upload tasks are joined.
 - The updated compute/fragment overlay shaders compiled successfully.
-- An isolated, offline Electron fixture switched RUN13 → RUN16 → RUN13 using the real application-host replacement path and actual BC1 encoders. It produced 720p frames with both engines, resized RUN16 to 480p and preserved 480p on the return to RUN13. The player, trusted-touch path and nonzero source audio stayed available; the audio sink was not closed during switching. A mock acknowledged transport replaced the physical Switch receiver, so this does not certify an actual console thread join or hardware FPS.
+- An isolated, offline Electron fixture switched Classic → Advanced → Classic using the real application-host replacement path and actual BC1 encoders. It produced 720p frames with both engines, resized Advanced to 480p and preserved 480p on the return to Classic. The player, trusted-touch path and nonzero source audio stayed available; the audio sink was not closed during switching. A mock acknowledged transport replaced the physical Switch receiver, so this does not certify an actual console thread join or hardware FPS.
 - The combined dependency audit covers 49 module-local files plus the declared public IZ2S core APIs; no installed module dependency is introduced.

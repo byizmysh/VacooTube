@@ -1,9 +1,9 @@
 {
   "format": "izlauncher.module",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "id": "vacootube",
   "name": "VacooTube",
-  "moduleVersion": "1.4.0",
+  "moduleVersion": "1.4.1",
   "switch": {
     "entry": "switch/app.json",
     "files": [
@@ -132,6 +132,6 @@
   "dependencies": [],
   "settingsSchema": [],
   "license": "GPL-2.0-or-later",
-  "description": "Independent video player for Switch 2 \u00b7 touch and controller input",
+  "description": "Independent video player for Switch 2 · touch and controller input",
   "installationDirectory": "VacooTube"
 }

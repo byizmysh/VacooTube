@@ -3,7 +3,7 @@
   "abi": 1,
   "id": "vacootube",
   "name": "VacooTube",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Independent video player for Switch 2 · touch and controller input",
   "icon": "icon.png",
   "builtin": "vacootube",

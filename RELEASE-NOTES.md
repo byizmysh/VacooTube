@@ -1,10 +1,16 @@
+# VacooTube 1.4.1
+
+- Give the render engines clear names: Classic and Advanced.
+- Update the console overlay, status labels and rendering guide consistently.
+- Preserve existing engine selections, default resolution and streaming behavior.
+
 # VacooTube 1.4.0
 
 First public VacooTube module release for NS2 and IZ2S Platform.
 
 - Independent installation under `modules/VacooTube/`; the required BlitBun streaming implementation is bundled.
 - Complete fork application source, controller/touch integration and a silent PC audio path.
-- RUN13 and RUN16 render engines, selectable from the hidden double-Minus console menu.
+- Classic and Advanced render engines, selectable from the hidden double-Minus console menu.
 - Live render resolutions from 1080p to 240p, defaulting to 720p; source-video quality separately defaults to 480p.
 - Linux x64 offline archive with Electron and prepared production dependencies; a smaller source archive is also available.
 - Real local application screenshots and direct links to this repository and its releases.

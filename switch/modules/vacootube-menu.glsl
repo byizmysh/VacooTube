@@ -24,7 +24,7 @@ void vacooMenuInput(uint pressed){
 float vacooText(vec2 p,vec2 origin,uint label,float scale){
  const uint chars[37]=uint[37](86u,65u,67u,79u,79u,84u,85u,66u,69u,82u,69u,78u,68u,69u,82u,32u,82u,69u,83u,79u,76u,85u,84u,73u,79u,78u,49u,48u,56u,48u,80u,55u,50u,48u,80u,53u,52u);
  if(label<2u){uint first=label==0u?0u:9u,count=label==0u?9u:17u;vec2 q=p-origin;int i=int(floor(q.x/(22.0*scale)));return i<0||i>=int(count)?0.0:uiGlyph(q-vec2(float(i)*22.0*scale,0),chars[first+uint(i)],scale);}
- if(label>=8u){const uint engineChars[25]=uint[25](82u,69u,78u,68u,69u,82u,32u,69u,78u,71u,73u,78u,69u,82u,85u,78u,49u,51u,82u,85u,78u,49u,54u,32u,32u);uint first=label==8u?0u:label==9u?13u:18u,count=label==8u?13u:5u;vec2 q=p-origin;int i=int(floor(q.x/(22.0*scale)));return i<0||i>=int(count)?0.0:uiGlyph(q-vec2(float(i)*22.0*scale,0),engineChars[first+uint(i)],scale);}
+ if(label>=8u){const uint engineChars[28]=uint[28](82u,69u,78u,68u,69u,82u,32u,69u,78u,71u,73u,78u,69u,67u,76u,65u,83u,83u,73u,67u,65u,68u,86u,65u,78u,67u,69u,68u);uint first=label==8u?0u:label==9u?13u:20u,count=label==8u?13u:label==9u?7u:8u;vec2 q=p-origin;int i=int(floor(q.x/(22.0*scale)));return i<0||i>=int(count)?0.0:uiGlyph(q-vec2(float(i)*22.0*scale,0),engineChars[first+uint(i)],scale);}
  const uint heights[6]=uint[6](1080u,720u,540u,480u,360u,240u);uint n=heights[label-2u],count=n==1080u?4u:3u;float ink=0.0;for(uint i=0u;i<count;i++){uint divisor=i==0u?(count==4u?1000u:100u):i==1u?(count==4u?100u:10u):i==2u?(count==4u?10u:1u):1u;ink=max(ink,uiGlyph(p-origin-vec2(float(i)*22.0*scale,0),48u+(n/divisor)%10u,scale));}return max(ink,uiGlyph(p-origin-vec2(float(count)*22.0*scale,0),80u,scale));
 }
 vec3 vacooMenuDraw(vec2 p){

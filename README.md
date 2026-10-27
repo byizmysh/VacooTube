@@ -155,13 +155,22 @@ Updates are managed as versioned IZ2S module releases. The fork does not check/i
 
 VacooTube bundles the capture/codec/transport implementation it uses under `server/streaming/`, adapted from the IZ2S BlitBun source. It does not import an installed BlitBun module and declares no dependency on it. The two modules can be installed individually or together. IZ2S serializes ownership of the console video slot when switching between them. This avoids duplicate active writers while keeping each module self-contained. Electron/system audio libraries remain external system dependencies, not module dependencies.
 
-## Streaming cadence profiles
+## Rendering engines
 
-VacooTube 1.4.0 uses the complete **RUN13 ??? render engine**: WASM BC1 encoding, original one-frame-ahead scheduler, block-delta compression, persistent TCP transport and qualified SDK receiver/unpacking programs. The RUN13 engine's own ABI tables, call-frame builder and native SDK client are included locally. Current RUN16 audio, touch input, route/display freshness protection and menu design remain in place. Neither BlitBun nor another module is required. RUN13 is the default. A second complete RUN16 renderer is bundled under `server/streaming/run16/`, including its native/WASM encoder, compression workers, prefetch scheduler and receiver. Neither renderer imports an installed BlitBun module.
+Open the hidden stream menu by **double-tapping Minus**, then choose **Render engine**:
 
-The menu is hidden until a double Minus press. It offers Continue, Render resolution, Render engine and Return to launcher. **Render engine → RUN13 / RUN16** switches the complete renderer and transport in the current player. The old encoder is stopped and its receiver joined before a new writer starts. The player and audio remain open; the picture stays black until a fresh frame is acknowledged. A failed receiver shutdown prevents a replacement writer from starting. The selected resolution is shared between both engines. New settings default to 720p and are saved in `modules/VacooTube/data/render-settings.json`. YouTube source-video quality remains a separate 480p default. An updated RUN16/IZ2S shell with the stream-menu extension is required; the installer refuses an older shell instead of silently losing the new controls.
+| Engine | How it works |
+| --- | --- |
+| **Classic** · default | WASM BC1 encoding with one frame prepared ahead, changed-block compression and a persistent connection. |
+| **Advanced** | Native BC1 encoding when available, with a WASM fallback, plus compression prefetch and a dedicated transfer pipeline. |
 
-See [render dependency map](docs/render-engine.md) and `server/streaming/run13/ORIGIN.json` and `server/streaming/run16/ORIGIN.json` for original hashes and compatibility adaptations. No frame-rate guarantee is inferred from a source port.
+Both engines are bundled with VacooTube and work without a separately installed BlitBun module. Choose the one that works best on your PC and network; the names do not imply a guaranteed frame rate.
+
+Switching engines keeps the player, audio and selected resolution open. The previous renderer and connection are stopped before the replacement starts, and the picture remains black until a fresh frame is ready. If the old connection cannot shut down safely, a second renderer is not started.
+
+The same menu offers **Continue**, **Render resolution** and **Return to launcher**. Rendering defaults to **720p**, with choices from 1080p down to 240p. YouTube video quality is a separate setting, defaulting to 480p when available. Preferences are saved in `modules/VacooTube/data/render-settings.json`; existing saved engine selections remain compatible. IZ2S Platform 0.16.0-rc.3 or newer is required for the console menu.
+
+See the [rendering guide and dependency map](docs/render-engine.md) for implementation details.
 
 ## Project license
 

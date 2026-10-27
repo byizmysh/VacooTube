@@ -1,7 +1,7 @@
 {
   "engines": [
-    "RUN13 ???",
-    "RUN16"
+    "Classic",
+    "Advanced"
   ],
   "externalModules": [],
   "dynamicWorkerEntries": [
@@ -888,7 +888,7 @@
     },
     {
       "file": "server/streaming/stream.cjs",
-      "sha256": "a7b669447b9484f3247cd387ce106e4e9e0f00509df23b098046a5183849c399",
+      "sha256": "ff78f281925310dd1e496bd748554b63659731326c5ed07b6ea67bc46010149f",
       "imports": [
         {
           "reference": "./render-lifecycle.cjs",
