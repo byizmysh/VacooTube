@@ -1,0 +1,15 @@
+{
+  "name": "vacootube",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Independent video player for Switch 2 \u00b7 touch and controller input",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node tools/module.cjs check",
+    "pack": "node tools/module.cjs pack",
+    "release": "node tools/module.cjs release"
+  },
+  "license": "GPL-2.0-or-later"
+}
