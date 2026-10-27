@@ -2,8 +2,6 @@
 
 <p align="center"><img src="assets/icon-master.png" width="120" alt="VacooTube — a glowing video lamp"></p>
 
-**A small screen. A long watchlist.**
-
 VacooTube is a video-player project for **Switch 2 / NS2**, running on a Linux PC and controlled from the console through **[IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform)** and **IZlauncher**. It uses a console/TV-style YouTube interface with touch and controller input.
 
 **This is a fork of [VacuumTube](https://github.com/shy1132/VacuumTube), adapted for NS2 and IZ2S.** The application source is included in `app/`; original copyright/MIT terms are preserved in `app/LICENSE`, and source revision/changes are recorded in [THIRD_PARTY.json](THIRD_PARTY.json).
