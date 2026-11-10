@@ -3,29 +3,21 @@
   "abi": 1,
   "id": "vacootube",
   "name": "VacooTube",
-  "version": "1.4.1",
+  "version": "1.5.3",
   "description": "Independent video player for Switch 2 · touch and controller input",
   "icon": "icon.png",
-  "builtin": "vacootube",
-  "hostModule": {
-    "id": "vacootube",
-    "version": "1.4.0",
-    "folder": "modules/vacootube/server/local-package"
+  "initialState": "assets/state.bin",
+  "data": "assets/font.bin",
+  "transition": "none",
+  "hostRuntime": "module:vacootube/standalone",
+  "shaders": {
+    "vertex": "app.vert.spv.deflate",
+    "fragment": "app.frag.spv.deflate",
+    "compute": "app.comp.spv.deflate"
   },
-  "shellContribution": {
-    "files": [
-      "modules/tiny-calc.glsl",
-      "modules/pc-screen.glsl",
-      "modules/pc-screen-input.glsl",
-      "modules/pc-screen-draw.glsl",
-      "modules/vacootube-menu.glsl"
-    ],
-    "defines": [
-      "IZ_STREAM",
-      "IZ_STREAM_PRIVATE",
-      "IZ_VACOOTUBE_MENU"
-    ],
-    "scene": 6,
-    "memoryBytes": 2097152
-  }
+  "memory": {
+    "bytes": 2097152,
+    "initial": "assets/video.bin"
+  },
+  "shaderEncoding": "deflate"
 }

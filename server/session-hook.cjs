@@ -1,6 +1,5 @@
 const hook=require('./streaming/session-hook.cjs'),engine=require('./streaming/stream.cjs'),sizes=require('./local-package/render-sizes.cjs');
 async function create(context,options={}){
- if(!require(require('node:path').join(require('./platform.cjs').root,'sdk/platform.cjs')).streamMenuExtensions)throw Error('Update IZ2S Platform to load the VacooTube console menu extension');
  const settings=await require('./render-settings.cjs').open();
  async function publish(){const value=Buffer.alloc(8);value.writeUInt32LE(settings.profile().height);value.writeUInt32LE(engine.ENGINES.indexOf(settings.engine()),4);await context.rpc.write(context.mapped+0x700c80+344,value);}
  await publish();let last=0,work=Promise.resolve(),activeHost;
@@ -12,8 +11,8 @@ async function create(context,options={}){
    if(resolution)await settings.set(sizes.HEIGHTS[action-48]);
    else {const next=engine.ENGINES[action-56];if(next!==settings.engine()){if(activeHost)await activeHost.replaceRenderEngine(()=>settings.setEngine(next));else await settings.setEngine(next);}}
    await publish();
-  }).catch(async error=>{console.error('VacooTube render settings: '+error.message);await publish().catch(()=>{});});}return;}
-  host.onState(state);
+  }).catch(async error=>{console.error('VacooTube render settings: '+error.message);await publish().catch(()=>{});});}return work;}
+  return host.onState(state);
  },async suspend(){await work;await host.suspend();activeHost=null;},async close(){await work;await host.close();activeHost=null;}};
 }
 module.exports={create};

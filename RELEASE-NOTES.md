@@ -1,3 +1,13 @@
+# VacooTube 1.5.3 — IZ2S Platform 0.22
+
+- Requires [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) and a connected console session.
+- Self-contained ABI-1 GPU application with module-owned shaders, font and menu; RAM and SD installation use the same host runtime.
+- Adaptive bounded audio buffering accounts for actual refill latency and reports missed deadlines.
+- Video acknowledgements carry input and route telemetry, removing redundant steady-stream polling and timer-driven display resets.
+- Double R3 returns to the launcher; double Minus opens the module menu. Performance overlay is off by default.
+- Source installation package and portable IZM are included.
+- Linux x64 offline package also includes the player runtime and prepared production dependencies; no separate BlitBun module is needed.
+
 # VacooTube 1.4.1
 
 - Give the render engines clear names: Classic and Advanced.

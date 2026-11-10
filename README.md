@@ -4,13 +4,19 @@
 
 VacooTube is a video-player project for **Switch 2 / NS2**, running on a Linux PC and controlled from the console through **[IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform)** and **IZlauncher**. It uses a console/TV-style YouTube interface with touch and controller input.
 
-> **Requires [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform) and IZlauncher.** Install [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) first and follow its [setup guide](https://github.com/byizmysh/IZ2S-Platform#installation). Keep the platform running on the PC and the console session connected during streaming.
+> **Requires [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform) 0.22 and a connected launcher session.** Install [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) first and follow its [setup guide](https://github.com/byizmysh/IZ2S-Platform#installation). Keep the platform running on the PC and the console session connected during streaming.
 
 VacooTube is an optional platform module, downloaded separately from [VacooTube Releases](https://github.com/byizmysh/VacooTube/releases/latest). It is not bundled with IZ2S Platform 0.22. Its BlitBun streaming engine is included; a separate BlitBun installation is not needed.
 
 **This is a fork of [VacuumTube](https://github.com/shy1132/VacuumTube), adapted for NS2 and IZ2S.** The application source is included in `app/`; original copyright/MIT terms are preserved in `app/LICENSE`, and source revision/changes are recorded in [THIRD_PARTY.json](THIRD_PARTY.json).
 
 This is not a native standalone Switch executable, a new console connection engine or a console emulator. The desktop application executes on the PC; the existing console session presents its video/audio and supplies input.
+
+## Updated for IZ2S Platform 0.22
+
+This package owns its console shaders, font and menu instead of merging them into a particular launcher skin. Install it in **RAM or on SD** and open it from IZlauncher or IZPSlauncher. Streaming still runs on the PC and needs an active connection.
+
+Audio buffering adapts to measured transfer latency while keeping the queue bounded. Video acknowledgements also carry input and route information, reducing competing polling during playback. Double-tap **Minus** for the module menu; double-tap **R3** to return to the launcher. The performance overlay is off by default.
 
 ## A quick look
 
@@ -44,7 +50,7 @@ The module keeps private browser/account state under its own `data/profile/`. It
 
 ## Requirements
 
-- Linux x64 or ARM64, IZ2S Platform 0.16.0-rc.3 or newer, API 1, console ABI 1 and IZlauncher.
+- Linux x64 or ARM64, [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0), API 1 and console ABI 1.
 - A working existing Switch 2 / SmileBASIC connection through the platform. This project does not install a bootstrap itself.
 - PipeWire/PulseAudio compatibility, `pactl` and `parec` for the owned silent audio path.
 - Node.js/npm and Python 3 to prepare a source installation. The pinned desktop runtime uses Electron 44.5.1.
@@ -142,6 +148,7 @@ Capture prioritizes fresh compositor output, uses bounded request state and paus
 Edit `app/` to develop the player itself; edit `server/` for console integration. Do not edit cached `runtime/source/<hash>/` or a live `.versions/` snapshot as your source of truth. Re-run the runtime installer after application-source edits so the prepared dependency/source snapshot matches the current fork.
 
 ```sh
+node tools/build-switch.cjs "$IZ2S"
 node tools/module.cjs check --platform "$IZ2S"
 node tools/module.cjs pack --platform "$IZ2S"
 # Commit finished source changes before release:
@@ -172,7 +179,7 @@ Both engines are bundled with VacooTube and work without a separately installed 
 
 Switching engines keeps the player, audio and selected resolution open. The previous renderer and connection are stopped before the replacement starts, and the picture remains black until a fresh frame is ready. If the old connection cannot shut down safely, a second renderer is not started.
 
-The same menu offers **Continue**, **Render resolution** and **Return to launcher**. Rendering defaults to **720p**, with choices from 1080p down to 240p. YouTube video quality is a separate setting, defaulting to 480p when available. Preferences are saved in `modules/VacooTube/data/render-settings.json`; existing saved engine selections remain compatible. IZ2S Platform 0.16.0-rc.3 or newer is required for the console menu.
+The same menu offers **Continue**, **Render resolution** and **Return to launcher**. Rendering defaults to **720p**, with choices from 1080p down to 240p. YouTube video quality is a separate setting, defaulting to 480p when available. Preferences are saved in `modules/VacooTube/data/render-settings.json`; existing saved engine selections remain compatible. IZ2S Platform 0.22 is required for this package.
 
 See the [rendering guide and dependency map](docs/render-engine.md) for implementation details.
 

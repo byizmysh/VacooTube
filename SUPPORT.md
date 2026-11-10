@@ -1,6 +1,6 @@
 # Platform support
 
-**Required host:** [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform) with IZlauncher. Use the current [0.22 release](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) and its [installation guide](https://github.com/byizmysh/IZ2S-Platform#installation). The PC platform and console connection must remain active for streaming.
+**Required host:** [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform) 0.22 with IZlauncher or IZPSlauncher. Use the current [0.22 release](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) and its [installation guide](https://github.com/byizmysh/IZ2S-Platform#installation). The PC platform and console connection must remain active for streaming.
 
 | Host | Status for this candidate |
 | --- | --- |

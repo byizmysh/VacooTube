@@ -307,16 +307,27 @@
       ]
     },
     {
-      "file": "server/streaming/lib/post-menu.cjs",
-      "sha256": "9717d2374478ea8bf3a2a25620e6c6b47ec5a47d363abf4a5f0a879108e10ab2",
+      "file": "server/streaming/lib/platform.cjs",
+      "sha256": "2dcbb12132c1a5846a860b2abb95e65770a618c09526f9d49e47c36cdd6ddaa2",
       "imports": [
         {
-          "reference": "node:fs/promises",
+          "reference": "node:fs",
           "kind": "node-builtin"
         },
         {
           "reference": "node:path",
           "kind": "node-builtin"
+        }
+      ]
+    },
+    {
+      "file": "server/streaming/lib/post-menu.cjs",
+      "sha256": "7f807816a4255b028dce188544697a34967ea25a21aa467de35844cdf287d44c",
+      "imports": [
+        {
+          "reference": "./platform.cjs",
+          "target": "server/streaming/lib/platform.cjs",
+          "kind": "module-local"
         }
       ]
     },
@@ -763,7 +774,7 @@
     },
     {
       "file": "server/streaming/run16/lib/pc-stream-tcp.cjs",
-      "sha256": "e23b00bab5b99f704a83d37f4fa781ce8760d1a68f06f2a82adf6860a68fe3c5",
+      "sha256": "36ab78a41dbb80a25f0fd39aa86947bb08c58260059da47beafd46a5d86dd243",
       "imports": [
         {
           "reference": "node:fs/promises",

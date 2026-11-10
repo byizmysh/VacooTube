@@ -35,12 +35,32 @@ float streamMenuText(vec2 p,vec2 origin,float size,int label){
 }
 // Rendered on the console after video decoding, so compression never blurs it.
 float streamHudGlyph(vec2 p,uint ch){
-#ifdef IZ_STREAM_FOCUS_TEXT
- if(ch==46u)p.y-=23.0;if(ch==45u)p.y-=12.0;
- uint i=clamp(ch,32u,127u)-32u;return focusText(p,vec2(0),ivec4(int(i%32u)*24,F_ASCII.y+int(i/32u)*32,24,32),1.5);
-#else
- return calcGlyph(p,ch,4.0);
-#endif
+ ivec2 q=ivec2(floor(p/4.0));if(any(lessThan(q,ivec2(0)))||q.x>=5||q.y>=7)return 0.0;uint bits=0u;
+ if(ch==70u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(554648095u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==80u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(554649150u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==83u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2182562319u>>at):(7u>>(at-32u)))&1u);}
+ if(ch==82u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(1699694142u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==69u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(3775873567u>>at):(7u>>(at-32u)))&1u);}
+ if(ch==78u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(1731913521u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==67u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(3775414799u>>at):(3u>>(at-32u)))&1u);}
+ if(ch==84u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(138547359u>>at):(1u>>(at-32u)))&1u);}
+ if(ch==76u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(3775414800u>>at):(7u>>(at-32u)))&1u);}
+ if(ch==65u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(1663026734u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==77u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(1662703473u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==88u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(1654794801u>>at):(4u>>(at-32u)))&1u);}
+ if(ch==48u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2744831534u>>at):(3u>>(at-32u)))&1u);}
+ if(ch==49u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2286031236u>>at):(3u>>(at-32u)))&1u);}
+ if(ch==50u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(3493922350u>>at):(7u>>(at-32u)))&1u);}
+ if(ch==51u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2182546494u>>at):(7u>>(at-32u)))&1u);}
+ if(ch==52u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2247698626u>>at):(0u>>(at-32u)))&1u);}
+ if(ch==53u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2183086623u>>at):(7u>>(at-32u)))&1u);}
+ if(ch==54u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2736734734u>>at):(3u>>(at-32u)))&1u);}
+ if(ch==55u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(276957247u>>at):(2u>>(at-32u)))&1u);}
+ if(ch==56u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2736211502u>>at):(3u>>(at-32u)))&1u);}
+ if(ch==57u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(2182596142u>>at):(3u>>(at-32u)))&1u);}
+ if(ch==46u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(0u>>at):(1u>>(at-32u)))&1u);}
+ if(ch==45u){uint at=uint(q.y*5+4-q.x);return float((at<32u?(1015808u>>at):(0u>>(at-32u)))&1u);}
+ return 0.0;
 }
 float streamHudLabel(vec2 p,vec2 origin,uint word){
  vec2 q=p-origin;int i=int(floor(q.x/30.0));if(i<0||i>=3)return 0.0;
@@ -81,23 +101,23 @@ float streamStartText(vec2 p,vec2 origin,float size,int label){
 // Runtime render settings use the same command channel as application launch.
 // They remain reachable while video is gated during a network or size change.
 float streamSettingLabel(vec2 p,vec2 origin,uint label,float scale){
- const uint chars[128]=uint[128](82u,69u,83u,79u,76u,85u,84u,73u,79u,78u,65u,85u,84u,79u,77u,65u,84u,73u,67u,54u,52u,48u,32u,88u,32u,51u,54u,48u,56u,51u,50u,32u,88u,32u,52u,54u,56u,57u,54u,48u,32u,88u,32u,53u,52u,48u,49u,50u,56u,48u,32u,88u,32u,55u,50u,48u,49u,54u,48u,48u,32u,88u,32u,57u,48u,48u,49u,57u,50u,48u,32u,88u,32u,49u,48u,56u,48u,67u,85u,82u,82u,69u,78u,84u,32u,79u,85u,84u,80u,85u,84u,68u,79u,67u,75u,69u,68u,32u,80u,82u,79u,70u,73u,76u,69u,72u,65u,78u,68u,72u,69u,76u,68u,32u,80u,82u,79u,70u,73u,76u,69u,68u,69u,70u,65u,85u,76u,84u);
- const uvec2 labels[12]=uvec2[12](uvec2(0u,10u),uvec2(10u,9u),uvec2(19u,9u),uvec2(28u,9u),uvec2(37u,9u),uvec2(46u,10u),uvec2(56u,10u),uvec2(66u,11u),uvec2(77u,14u),uvec2(91u,14u),uvec2(105u,16u),uvec2(121u,7u));uvec2 item=labels[label];vec2 q=p-origin;int i=int(floor(q.x/(22.0*scale)));if(i<0||i>=int(item.y))return 0.0;return uiGlyph(q-vec2(float(i)*22.0*scale,0),chars[item.x+uint(i)],scale);
+ return blitLabel(p,origin,label,scale);
 }
 vec3 streamMenuDraw(vec2 p,vec3 color,uint menu,uint selected,uint title,bool start){
+ if(menu==0u&&(c.atlas[SB+24u]&4u)!=0u)return color;
  if(start||menu==0u||c.atlas[SB+40u]==2u||c.atlas[SB+40u]==4u)return uiMenuDrawWithHint(p,color,menu,selected,title,start,true);
  vec3 lime=vec3(.835,1,0),ink=vec3(.949,.945,.91),muted=vec3(.62,.66,.62);bool sizeMenu=menu==2u||menu==4u||menu==5u,profiles=menu==3u;
  color*=.88;float panel=uiFill(uiBox(p,vec2(268,540),vec2(268,540),24.0));color=mix(color,vec3(.045,.058,.047),panel*.9);
  color=mix(color,lime,uiLabel(p,vec2(48,70),1u,.8));color=mix(color,ink,(sizeMenu||profiles)?streamSettingLabel(p,vec2(48,186),menu==4u?9u:menu==5u?10u:0u,.98):uiLabel(p,vec2(48,186),title,1.05));color=mix(color,muted,uiLabel(p,vec2(48,245),14u,.64));
  for(int j=0;j<2;j++){vec2 v=p-vec2(492,90);float l=abs(v.y-(j==0?v.x:-v.x))*.707;float mark=(1.0-smoothstep(1.0,2.6,l))*step(abs(v.x),12.0);color=mix(color,ink,mark);}
  uint count=sizeMenu?7u:3u;for(uint i=0u;i<count;i++){float y=354.0+float(i)*88.0;bool focus=selected==i;float d=uiBox(p,vec2(274,y),vec2(230,36),13.0);if(focus){color=mix(color,lime,uiFill(d)*.13);color=mix(color,lime,(1.0-smoothstep(.5,1.5,abs(d)))*.65);color=mix(color,lime,uiFill(uiBox(p,vec2(48,y),vec2(2,14),2.0)));}float text=sizeMenu?streamSettingLabel(p,vec2(70,y-9),i==0u&&menu!=2u?11u:i+1u,.84):profiles?streamSettingLabel(p,vec2(70,y-9),8u+i,.84):i==1u?streamSettingLabel(p,vec2(70,y-9),0u,.84):uiLabel(p,vec2(70,y-9),i==0u?2u:3u,.84);color=mix(color,focus?lime:ink,text);}
- return mix(color,muted,uiLabel(p,vec2(48,1000),4u,.78));
+ color=mix(color,muted,uiLabel(p,vec2(48,920),4u,.68));color=mix(color,muted,uiLabel(p,vec2(48,960),18u,.68));return mix(color,muted,uiLabel(p,vec2(48,1000),19u,.68));
 }
 vec3 streamDraw(vec2 p){
  uint menu=c.atlas[SB+25u];bool routePending=c.atlas[SB+63u]!=0u,displayReady=!routePending&&c.atlas[SB+41u]==1u&&c.atlas[SB+69u]==1u;vec3 background=vec3(0);
  // The host opens this gate only after a fresh, verified frame is acknowledged.
  // Compute still latches/ACKs while the display waits; user-opened menus work.
- if(!displayReady&&menu==0u)return background;
+ if(!displayReady&&menu==0u)return blitWaiting(p,c.atlas[SB+37u]);
  bool stretch=(c.atlas[SB+24u]&1u)!=0u;
  vec3 color=background;ivec2 size=ivec2(c.atlas[SB+4u],c.atlas[SB+5u]);
  if(displayReady&&c.atlas[SB+3u]!=0u&&all(greaterThan(size,ivec2(0)))){

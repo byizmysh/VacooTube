@@ -36,5 +36,13 @@
     "scope": "Independently authored IZMYSH code only; explicit component licenses and prior grants remain applicable",
     "notice": "COPYRIGHT",
     "details": "LICENSE-SCOPE.md"
+  },
+  "consoleFont": {
+    "name": "DejaVu Sans Mono",
+    "source": "https://dejavu-fonts.github.io/",
+    "license": "Bitstream Vera license; DejaVu changes are public domain",
+    "notice": "assets/fonts/LICENSE.txt",
+    "font": "assets/fonts/DejaVuSansMono.ttf",
+    "derivedAsset": "switch/assets/font.bin"
   }
 }

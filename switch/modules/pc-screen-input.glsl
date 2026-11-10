@@ -17,32 +17,32 @@ uint streamMenuPressed(uint pressed){
  return (pressed&~HB_MINUS)|(toggle?HB_MINUS:0u);
 }
 // Read the independent sensor publication through a coherent alias; retain the
-// last complete sample during the sampler's bounded invalidate/commit window.
+// last complete sampleValid during the sampler's bounded invalidate/commit window.
 layout(set=0,binding=0,std430) coherent volatile readonly buffer StreamSensors{uint words[];}streamSensors;
 uint streamSensorWord(uint offset){return streamSensors.words[(0x7f0000u+544u+offset)/4u];}
+bool streamExitPressed(uint pressed){
+ uint now=c.atlas[SB+60u],hi=c.atlas[SB+61u];
+ if((pressed&32u)==0u)return false;
+ uint lo=c.atlas[SB+104u],beforeHi=c.atlas[SB+105u],elapsed=now-lo,high=hi-beforeHi-(now<lo?1u:0u);
+ bool exit=c.atlas[SB+106u]==1u&&high==0u&&elapsed<18750000u;
+ c.atlas[SB+104u]=now;c.atlas[SB+105u]=hi;c.atlas[SB+106u]=exit?0u:1u;
+ if(exit){c.atlas[CB+1u]=0u;c.atlas[SB+25u]=0u;c.atlas[SB+69u]=0u;c.state.y=hbButtons();}
+ return exit;
+}
 bool streamWithin(uint lo,uint hi,uint beforeLo,uint beforeHi,uint limit){uint delta=lo-beforeLo,high=hi-beforeHi-(lo<beforeLo?1u:0u);return high==0u&&delta<=limit;}
+// Read passive mode telemetry already sampled by the platform. Transport ACKs
+// and explicit source transitions own visibility; diagnostic age never resets
+// the stream, pauses audio or starts a GPU/host generation handshake.
 void streamFreshness(bool acceptedFrame){
- if(c.atlas[CB+1u]!=2u||c.atlas[SB+38u]!=0u){c.atlas[SB+69u]=0u;c.atlas[SB+83u]=0u;c.atlas[SB+24u]&=0xe0ffffffu;return;}
- uint now=c.atlas[SB+60u],nowHi=c.atlas[SB+61u],magic=streamSensorWord(0u),version=streamSensorWord(4u),sensorLo=streamSensorWord(32u),sensorHi=streamSensorWord(36u),mode=streamSensorWord(8u),result=streamSensorWord(12u),type=streamSensorWord(16u),status=streamSensorWord(24u);
+ uint now=c.atlas[SB+60u],hi=c.atlas[SB+61u],magic=streamSensorWord(0u),lo=streamSensorWord(32u),beforeHi=streamSensorWord(36u);
+ uint mode=streamSensorWord(8u),result=streamSensorWord(12u),type=streamSensorWord(16u),status=streamSensorWord(24u);
  memoryBarrierBuffer();
- bool snapshot=magic==0x495a534eu&&version==1u&&streamSensorWord(0u)==magic&&streamSensorWord(32u)==sensorLo&&streamSensorWord(36u)==sensorHi&&streamWithin(now,nowHi,sensorLo,sensorHi,31250000u);
- if(snapshot){c.atlas[SB+76u]=sensorLo;c.atlas[SB+77u]=sensorHi;c.atlas[SB+78u]=mode;c.atlas[SB+79u]=result;c.atlas[SB+80u]=type;c.atlas[SB+81u]=status;c.atlas[SB+82u]=1u;}
- mode=c.atlas[SB+78u];result=c.atlas[SB+79u];type=c.atlas[SB+80u];status=c.atlas[SB+81u];
- uint policy=c.atlas[SB+84u]==1u?1u:0u;
- bool sensorReady=c.atlas[SB+62u]==31250000u&&c.atlas[SB+82u]==1u&&streamWithin(now,nowHi,c.atlas[SB+76u],c.atlas[SB+77u],31250000u),routeReady=sensorReady&&mode<=1u&&result==0u&&status==4u&&(mode==0u?type==1u:type==2u||(policy==1u&&type==1u));
- uint pub=c.atlas[SB+3u],route=(type&255u)|((status&255u)<<8u)|(result==0u?0u:65536u),heartbeat=c.atlas[SB+74u];
- bool initial=c.atlas[SB+83u]!=0x495a4631u,changed=!initial&&(policy!=c.atlas[SB+85u]||(sensorReady&&(mode!=c.atlas[SB+67u]||route!=c.atlas[SB+68u]))),stalled=!initial&&!streamWithin(now,nowHi,c.atlas[SB+64u],c.atlas[SB+65u],12500000u);
- bool blackout=initial||changed||(c.atlas[SB+69u]==1u&&(!routeReady||stalled||c.atlas[SB+41u]!=1u||c.atlas[SB+63u]!=0u));
- if(blackout){uint generation=c.atlas[SB+70u]+1u;c.atlas[SB+70u]=generation==0u?1u:generation;c.atlas[SB+69u]=0u;c.atlas[SB+72u]=0u;c.atlas[SB+71u]=initial?0u:pub;c.atlas[SB+64u]=now;c.atlas[SB+65u]=nowHi;}
- if(sensorReady){c.atlas[SB+67u]=mode;c.atlas[SB+68u]=route;}
- c.atlas[SB+83u]=0x495a4631u;c.atlas[SB+85u]=policy;
- bool progress=acceptedFrame&&pub!=0u&&pub!=c.atlas[SB+66u];
- if(progress||heartbeat!=c.atlas[SB+75u]){c.atlas[SB+64u]=now;c.atlas[SB+65u]=nowHi;}
- c.atlas[SB+66u]=pub;c.atlas[SB+75u]=heartbeat;
- if(progress&&routeReady&&(!blackout||initial)&&pub!=c.atlas[SB+71u])c.atlas[SB+72u]=c.atlas[SB+70u];
- if(routeReady&&c.atlas[SB+41u]==1u&&c.atlas[SB+63u]==0u&&c.atlas[SB+72u]==c.atlas[SB+70u]&&c.atlas[SB+73u]==c.atlas[SB+70u])c.atlas[SB+69u]=1u;
- // Additive ACK telemetry: visible, sensor, route, host readiness, then schema.
- c.atlas[SB+24u]=(c.atlas[SB+24u]&0xe0ff00ffu)|((c.atlas[SB+70u]&255u)<<8u)|0x10000000u|(c.atlas[SB+69u]==1u?0x01000000u:0u)|(sensorReady?0x02000000u:0u)|(routeReady?0x04000000u:0u)|(c.atlas[SB+41u]==1u&&c.atlas[SB+63u]==0u?0x08000000u:0u);
+ bool sampleValid=magic==0x495a534eu&&streamSensorWord(4u)==1u&&streamSensorWord(0u)==magic&&streamSensorWord(32u)==lo&&streamSensorWord(36u)==beforeHi&&streamWithin(now,hi,lo,beforeHi,93750000u);
+ bool route=sampleValid&&mode<=1u&&result==0u&&status==4u;
+ bool host=c.atlas[SB+41u]==1u&&c.atlas[SB+63u]==0u&&c.atlas[CB+1u]==2u&&c.atlas[SB+38u]==0u;
+ c.atlas[SB+69u]=host&&c.atlas[SB+3u]!=0u?1u:0u;c.atlas[SB+70u]=1u;
+ uint telemetry=sampleValid?((mode&1u)<<4u)|((type&3u)<<5u)|(status==4u?128u:0u):0u;
+ c.atlas[SB+24u]=(c.atlas[SB+24u]&0xe0ff000fu)|telemetry|256u|0x10000000u|(c.atlas[SB+69u]==1u?0x01000000u:0u)|(sampleValid?0x02000000u:0u)|(route?0x04000000u:0u)|(host?0x08000000u:0u);
 }
 void streamLatch(){
  uint pub=c.atlas[SB],w=c.atlas[SB+1u],h=c.atlas[SB+2u],format=c.atlas[SB+6u];
@@ -61,6 +61,7 @@ void streamOpen(){c.atlas[SB+69u]=0u;c.atlas[SB+83u]=0u;c.atlas[SB+51u]=0u;c.atl
 }
 void streamCommand(uint action){c.atlas[SB+40u]=action;c.transition.z=float(action);c.transition.w=c.transition.w>=1000000.0?1.0:c.transition.w+1.0;c.atlas[SB+37u]=1u;c.atlas[SB+25u]=0u;c.atlas[SB+38u]=0u;}
 void streamInput(uint pressed){
+ if(streamExitPressed(pressed))return;
  pressed=streamMenuPressed(pressed);
  bool held=c.touch[2]==1u&&(c.touch[6]&2u)==0u,tap=held&&c.atlas[CB+2u]==0u;vec2 p=vec2(c.touch[8],c.touch[9])*1.5;
  uint menu=c.atlas[SB+25u],sel=c.atlas[SB+39u];bool start=c.atlas[SB+38u]!=0u,fixedSource=c.atlas[SB+40u]==2u||c.atlas[SB+40u]==4u;

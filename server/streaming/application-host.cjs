@@ -88,7 +88,7 @@ function createDisplayFreshness({rpc,mapped,header=HEADER,enabled=true,allowed=(
  function beat(){const revision=epoch,state=context(),at=now();return queue(async()=>{if(!enabled||visible!==true||!own(revision,state)||!freshSource()||at-lastHeartbeat<200)return false;heartbeat=(heartbeat+1)>>>0||1;await rpc.write(mapped+header+296,word(heartbeat));lastHeartbeat=at;return true;});}
  return {gate,heartbeat:beat,drain:()=>barrier,get visible(){return visible;}};
 }
-async function create({rpc,mapped,directory,persistRenderSettings=false,renderSettings=null,panelLabel=null,port=0,transport=process.env.HB_STREAM_TRANSPORT||'tcp',preview=false,audioFactory=require('./lib/stream-audio.cjs').create,streamFactory,cropWindow=require('./lib/window-crop.cjs').crop,listNativeWindows=require('./lib/native-window-capture.cjs').list,selectNativeWindow=require('./lib/native-window-capture.cjs').select,captureNativeWindow=require('./lib/native-window-capture.cjs').create,focusWindow=require('./lib/window-focus.cjs').focus,gamepadFactory=createGamepad,launchHl2,captureHl2,launchGtav,captureGtav,createRangersController,launchRangers,captureRangers,createGtavOverlay,startHl2,createYoutube,playerIntegration=null,startYoutubeInput=require('./lib/youtube-input-sampler.cjs').start,startConsoleState=require(require('node:path').join(require('./lib/platform.cjs').root,"core/services/console-state.cjs")).start,controllerInventory=null,createControllerHub=async options=>(await require(require('node:path').join(require('./lib/platform.cjs').root,'core/components.cjs')).provider('controller-hub',{optional:true}))?.create(options),openWindow=url=>require(require('node:path').join(require('./lib/platform.cjs').root,"core/services/open-panel.cjs")).openPanel(url,{env:{...process.env,HB_OPEN_PANEL:'1'}})}){
+async function create({rpc,mapped,directory,persistRenderSettings=false,renderSettings=null,panelLabel=null,port=0,transport=process.env.HB_STREAM_TRANSPORT||'tcp',preview=false,audioFactory=require('./lib/stream-audio.cjs').create,streamFactory,cropWindow=require('./lib/window-crop.cjs').crop,listNativeWindows=require('./lib/native-window-capture.cjs').list,selectNativeWindow=require('./lib/native-window-capture.cjs').select,captureNativeWindow=require('./lib/native-window-capture.cjs').create,focusWindow=require('./lib/window-focus.cjs').focus,gamepadFactory=createGamepad,launchHl2,captureHl2,launchGtav,captureGtav,createRangersController,launchRangers,captureRangers,createGtavOverlay,startHl2,createYoutube,playerIntegration=null,startYoutubeInput=require('./lib/youtube-input-sampler.cjs').start,controllerInventory=null,createControllerHub=async options=>(await require(require('node:path').join(require('./lib/platform.cjs').root,'core/components.cjs')).provider('controller-hub',{optional:true}))?.create(options),openWindow=url=>require(require('node:path').join(require('./lib/platform.cjs').root,"core/services/open-panel.cjs")).openPanel(url,{env:{...process.env,HB_OPEN_PANEL:'1'}})}){
  if(!Number.isInteger(port)||port!==0&&port<1024||port>65535)throw Error('Invalid capture port');
  const moduleServers=new Map();
  async function component(id,name){
@@ -109,11 +109,11 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
  if(!['rpc','tcp'].includes(transport))throw Error('HB_STREAM_TRANSPORT must be rpc or tcp');
  const factory=streamFactory||(transport==='tcp'?require(path.join(__dirname,'lib',process.env.HB_VIDEO_CODEC==='legacy'?'pc-stream-tcp.cjs':'pc-stream-delta.cjs')).uploader:uploader);
  const video={base:mapped+SLOT,stride:STRIDE,capacity:STRIDE};
- let options={stretch:false,controller:'off',stats:true,audioOutput:'auto',resolution:'auto',dockResolution:'1920',handheldResolution:'1280',fps:60,shareSound:true,compressionPolicy:'auto',renderMode:'auto',allowDockWifi:false},remote,pad,padProfile=null,source='browser',pump,audioSink,audioEnabled=false,browserPending,lastCommand=0,captureTarget=null,gameProfile=null,nativeGame=null,gtavOverlay=null,youtubeInput=null,youtubeStopping=false;const panels=new Set();await rpc.write(mapped+HEADER+96,Buffer.from([4,0,0,0]));
+ let options={stretch:false,controller:'off',stats:false,audioOutput:'auto',resolution:'auto',dockResolution:'1920',handheldResolution:'1280',fps:60,shareSound:true,compressionPolicy:'auto',renderMode:'auto',allowDockWifi:false},remote,pad,padProfile=null,source='browser',pump,audioSink,audioEnabled=false,browserPending,lastCommand=0,captureTarget=null,gameProfile=null,nativeGame=null,gtavOverlay=null,youtubeInput=null,youtubeStopping=false;const panels=new Set();await rpc.write(mapped+HEADER+96,Buffer.from([0,0,0,0]));
  const profileStore=renderSettings||(persistRenderSettings?await require('./lib/render-profile.cjs').settings(require('./lib/platform.cjs').root):null);if(profileStore)Object.assign(options,profileStore.get());const initialDockPolicy=Buffer.alloc(4);initialDockPolicy.writeUInt32LE(options.allowDockWifi?1:0);await rpc.write(mapped+HEADER+336,initialDockPolicy);
  const initialProfiles=Buffer.alloc(12);[options.resolution==='auto'?0:Number(options.resolution),Number(options.dockResolution),Number(options.handheldResolution)].forEach((value,i)=>initialProfiles.writeUInt32LE(value,i*4));await rpc.write(mapped+HEADER+168,initialProfiles);
  let controllerHub=null,displayVisible=null,notifyProfile=()=>{},routeGate=null,stream,gpuGeneration=null;
- const displayFreshness=createDisplayFreshness({rpc,mapped,observedGeneration:()=>gpuGeneration,onGenerationChange:noteGpuGeneration,enabled:!preview&&rpc.a?.sdkCrc32===3925528160,allowed:()=>!closing&&(!routeGate||routeGate.allowNow()),context:()=>JSON.stringify([source,nativeGame?.report?.sourceEpoch??null,routeGate?.snapshot().generation??0]),freshSource:()=>!nativeGame?.report?.closed&&!nativeGame?.report?.sourceHidden&&!nativeGame?.report?.captureSuspended&&!nativeGame?.report?.routePaused&&!nativeGame?.report?.reconfiguring,onVisible:visible=>{displayVisible=visible;if(visible&&source==='grand-theft-auto-5'&&options.stats)gtavOverlay?.show();}});
+ const displayFreshness=createDisplayFreshness({rpc,mapped,observedGeneration:()=>gpuGeneration,onGenerationChange:noteGpuGeneration,enabled:false,allowed:()=>!closing&&(!routeGate||routeGate.allowNow()),context:()=>JSON.stringify([source,nativeGame?.report?.sourceEpoch??null,routeGate?.snapshot().generation??0]),freshSource:()=>!nativeGame?.report?.closed&&!nativeGame?.report?.sourceHidden&&!nativeGame?.report?.captureSuspended&&!nativeGame?.report?.routePaused&&!nativeGame?.report?.reconfiguring,onVisible:visible=>{displayVisible=visible;if(visible&&source==='grand-theft-auto-5'&&options.stats)gtavOverlay?.show();}});
  async function displayGate(visible,reason){return displayFreshness.gate(!!visible,reason);}
 
  await displayGate(false,'initializing');
@@ -144,18 +144,12 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
    const neutral=Buffer.alloc(396);remote?.input(neutral);pad?.input(neutral);nativeGame?.release?.();stream.stats.inputError=error.message;
   }});
  }
- const routeChecks=!preview&&rpc.a?.sdkCrc32===3925528160;
- routeGate=require('./lib/route-gate.cjs').create({enabled:routeChecks,allowDockWifi:()=>options.allowDockWifi,onChange:async next=>{
-  const neutral=Buffer.alloc(396);remote?.input(neutral);pad?.input(neutral);nativeGame?.release?.();
-  const paused=Promise.resolve(nativeGame?.pauseCapture?.(next.ready?'console-route-changed':'console-route-pending'));paused.catch(()=>{});
-  await displayGate(false,next.reason);const status=Buffer.alloc(4);status.writeUInt32LE(next.code);await rpc.write(mapped+HEADER+252,status);
-  if(stream)stream.stats.routeGate=next;
-  await Promise.all([paused,stream?.invalidate?.('physical-route-generation-changed')]);notifyProfile();
- }});
- const initialRoute=Buffer.alloc(4);initialRoute.writeUInt32LE(routeGate.snapshot().code);await rpc.write(mapped+HEADER+252,initialRoute);
- const consoleMonitor=routeChecks?startConsoleState({rpc,directory,onChange:state=>{routeGate.update(state).catch(error=>{if(stream)stream.stats.freshnessError=error.message;});}}):null;
+ // Readiness is observed once, not polled on the native RPC/audio queue.
+ const consoleMonitor=await require('./lib/stream-monitor.cjs').create({rpc,directory,preview});
+ routeGate=require('./lib/route-gate.cjs').create({enabled:false});
+ const initialRoute=Buffer.alloc(4);await rpc.write(mapped+HEADER+252,initialRoute);
  const hl2ProfileFor=require('./lib/render-profile.cjs').resolver({consoleState:()=>consoleMonitor?.state,selection:()=>options});
- const makeStream=()=>{const created=factory({rpc,mapped,video,directory,consoleState:()=>consoleMonitor?.state,onFreshness:displayGate,onHeartbeat:()=>displayFreshness.heartbeat(),compressionPolicy:()=>options.compressionPolicy,renderMode:()=>options.renderMode,onInput:packet=>{if(youtubeInput?.noteAck)youtubeInput.noteAck(packet);else if(!youtubeInput)dispatchInput(packet);if(source==='player'&&packet.readUInt32LE(328)!==2&&!youtubeStopping&&!closing){youtubeStopping=true;changeOptions({...options,source:'browser',controller:'off'}).catch(error=>{stream.stats.sourceError=error.message;stream.stats.sourceErrorStack=error.stack;}).finally(()=>youtubeStopping=false);}},onPause:paused=>{youtubeInput?.pause(paused);if(paused){const neutral=Buffer.alloc(396);remote?.input(neutral);pad?.input(neutral);if(source==='player')nativeGame?.release();}},controlsEnabled:()=>source==='player'||options.controller!=='off',keepAlive:()=>source==='grand-theft-auto-5'&&options.stats,save:stats=>fs.writeFile(path.join(directory,'pc-screen-stats.json'),JSON.stringify(stats,null,2))});
+ const makeStream=()=>{const created=factory({rpc,mapped,video,directory,consoleState:()=>consoleMonitor?.state,onFreshness:displayGate,onHeartbeat:async()=>true,compressionPolicy:()=>options.compressionPolicy,renderMode:()=>options.renderMode,onInput:packet=>{consoleMonitor.observe(packet,stream?.consoleAddress?.());if(youtubeInput?.noteAck)youtubeInput.noteAck(packet);else if(!youtubeInput)dispatchInput(packet);if(source==='player'&&packet.readUInt32LE(328)!==2&&!youtubeStopping&&!closing){youtubeStopping=true;changeOptions({...options,source:'browser',controller:'off'}).catch(error=>{stream.stats.sourceError=error.message;stream.stats.sourceErrorStack=error.stack;}).finally(()=>youtubeStopping=false);}},onPause:paused=>{youtubeInput?.pause(paused);if(paused){const neutral=Buffer.alloc(396);remote?.input(neutral);pad?.input(neutral);if(source==='player')nativeGame?.release();}},controlsEnabled:()=>source==='player'||options.controller!=='off',keepAlive:()=>source==='grand-theft-auto-5'&&options.stats,save:stats=>fs.writeFile(path.join(directory,'pc-screen-stats.json'),JSON.stringify(stats,null,2))});
   for(const method of ['prepare','push','prepareFrame'])if(typeof created[method]==='function'){const original=created[method].bind(created);created[method]=async(...args)=>{await routeGate.ready();return original(...args);};}
   if(created.commitPrepared){const original=created.commitPrepared.bind(created);created.commitPrepared=(...args)=>routeGate.allowNow()?original(...args):false;}
   if(created.wirePrefetchReady){const original=created.wirePrefetchReady.bind(created);created.wirePrefetchReady=()=>routeGate.allowNow()&&original();}
@@ -201,7 +195,7 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
    if(!start&&id!==browserAudioId)return {stopped:true};
    if(source!=='browser'){if(start)throw Error('Browser capture is inactive');return {stopped:true};}
    await stopPump();
-   if(start){audioSink=await audioFactory({rpc,directory,source:browserPcm,enabled:()=>(preview||audioEnabled)&&routeGate.allowNow(),label:'Capture',audioOutput:()=>options.audioOutput});browserAudioId=crypto.randomBytes(8).toString('hex');}
+   if(start){audioSink=await audioFactory({rpc,directory,source:browserPcm,enabled:()=>(preview||audioEnabled)&&routeGate.allowNow(),label:'Capture',routeSignal:()=>consoleMonitor.revision,audioOutput:()=>options.audioOutput});browserAudioId=crypto.randomBytes(8).toString('hex');}
    ensureInput();return {audioId:browserAudioId,stopped:!start};
   });optionQueue=change;return change;
  }
@@ -214,10 +208,10 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
   if(typeof next.stretch!=='boolean'||typeof next.stats!=='boolean'||!['off','gamepad'].includes(next.controller)||next.launch!==undefined&&!['doom','half-life-2','player','grand-theft-auto-5','space-rangers'].includes(next.launch)||next.source!==undefined&&!['browser','native-window','doom','half-life-2','player','grand-theft-auto-5','space-rangers'].includes(next.source))throw Error('Invalid options');
   if(next.windowId!==undefined&&(!Number.isSafeInteger(next.windowId)||next.windowId<=0||next.source!=='native-window'))throw Error('Invalid selected window');
   if(next.launch==='player'){next.controller='gamepad';next.stretch=true;next.stats=false;next.source='player';}
-  if(next.launch==='half-life-2'){next.controller='gamepad';next.stretch=true;next.stats=true;next.source='half-life-2';}
-  if(next.launch==='grand-theft-auto-5'){next.controller='gamepad';next.stretch=true;next.stats=true;next.source='grand-theft-auto-5';}
-  if(next.launch==='space-rangers'){next.controller='gamepad';next.stretch=true;next.stats=true;next.source='space-rangers';}
-  if(next.launch==='doom'){next.controller='gamepad';next.stretch=true;next.stats=true;next.source='doom';}
+  if(next.launch==='half-life-2'){next.controller='gamepad';next.stretch=true;next.source='half-life-2';}
+  if(next.launch==='grand-theft-auto-5'){next.controller='gamepad';next.stretch=true;next.source='grand-theft-auto-5';}
+  if(next.launch==='space-rangers'){next.controller='gamepad';next.stretch=true;next.source='space-rangers';}
+  if(next.launch==='doom'){next.controller='gamepad';next.stretch=true;next.source='doom';}
   const change=optionQueue.catch(()=>{}).then(async()=>{
    if(closing)throw Error('Session is stopping');
    const selectedWindow=next.windowId!==undefined?await selectNativeWindow(next.windowId):null;
@@ -249,16 +243,16 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
    if(['space-rangers','half-life-2','grand-theft-auto-5','native-window'].includes(source)&&options.controller!=='off')gameFocus.arm();
    if(!routeGate.snapshot().ready)await nativeGame?.pauseCapture?.('console-route-pending');
    if(['space-rangers','half-life-2','grand-theft-auto-5','native-window'].includes(source)&&!pump&&!preview&&nativeGame){
-    try{audioSink=await audioFactory({rpc,directory,source:nativeGame.audio,enabled:()=>audioEnabled&&options.shareSound&&routeGate.allowNow(),label:source==='space-rangers'?'Space Rangers':source==='grand-theft-auto-5'?'GTA V':source==='native-window'?'Window':'Half-Life 2',audioOutput:()=>options.audioOutput});}catch(error){stream.stats.audioError=error.message;}
+    try{audioSink=await audioFactory({rpc,directory,source:nativeGame.audio,enabled:()=>audioEnabled&&options.shareSound&&routeGate.allowNow(),routeSignal:()=>consoleMonitor.revision,label:source==='space-rangers'?'Space Rangers':source==='grand-theft-auto-5'?'GTA V':source==='native-window'?'Window':'Half-Life 2',audioOutput:()=>options.audioOutput});}catch(error){stream.stats.audioError=error.message;}
     delete stream.stats.sourceError;pump=(startHl2||(source==='native-window'?require('./lib/hl2-stream.cjs'):(await component(source,'stream'))).start)({remote:nativeGame,stream,profileFor:hl2ProfileFor,decorateMetrics:metrics=>gtavOverlay?.decorate(metrics),onProfile:profile=>{gameProfile={...gameProfile,...profile,sequence:(gameProfile?.sequence||0)+1};emit();},onError:error=>{stream.stats.sourceError=error.message;stream.stats.sourceErrorStack=error.stack;fs.writeFile(path.join(directory,'pc-screen-stats.json'),JSON.stringify(stream.stats,null,2)).catch(()=>{});emit();}});
    }
    if(source==='player'&&!pump&&!preview&&nativeGame){
     ensureInput();
-    try{audioSink=await audioFactory({rpc,directory,source:nativeGame.audio,enabled:()=>audioEnabled&&routeGate.allowNow(),label:'YouTube',audioOutput:()=>options.audioOutput});}catch(error){stream.stats.audioError=error.message;}
+    try{audioSink=await audioFactory({rpc,directory,source:nativeGame.audio,enabled:()=>audioEnabled&&routeGate.allowNow(),label:'YouTube',routeSignal:()=>consoleMonitor.revision,audioOutput:()=>options.audioOutput});}catch(error){stream.stats.audioError=error.message;}
     startPlayerPump();
    }
    if(source==='doom'&&!pump&&!preview&&remote){
-    try{audioSink=await audioFactory({rpc,directory,source:remote.audio,enabled:()=>audioEnabled&&routeGate.allowNow(),audioOutput:()=>options.audioOutput});}catch(error){console.error('Doom audio: '+error.message);await fs.writeFile(path.join(directory,'stream-audio-error.json'),JSON.stringify({error:error.message,at:new Date().toISOString()}));}
+    try{audioSink=await audioFactory({rpc,directory,source:remote.audio,enabled:()=>audioEnabled&&routeGate.allowNow(),routeSignal:()=>consoleMonitor.revision,audioOutput:()=>options.audioOutput});}catch(error){console.error('Doom audio: '+error.message);await fs.writeFile(path.join(directory,'stream-audio-error.json'),JSON.stringify({error:error.message,at:new Date().toISOString()}));}
     delete stream.stats.sourceError;pump=(await component('doom','stream')).start({remote,stream,onError:error=>{stream.stats.sourceError=error.message;stream.stats.sourceErrorStack=error.stack;console.error('Doom stream: '+error.message);fs.writeFile(path.join(directory,'pc-screen-stats.json'),JSON.stringify(stream.stats,null,2)).catch(()=>{});emit();}});}
    ensureInput();emit();return {...options,source,preview,gameProfile};
   });optionQueue=change;return change;
@@ -319,7 +313,6 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
    }
    if(url.pathname!=='/frame')return reply(404,{error:'Not found'});
    if(source!=='browser')return reply(409,{error:'Doom is streaming directly'});
-   if(routeChecks&&req.headers['x-stream-route']!==String(routeGate.snapshot().generation))return reply(503,{error:'Console mode or network changed; capture a fresh frame',recoverable:true,retryAfterMs:1});
    const w=Number(url.searchParams.get('w')),h=Number(url.searchParams.get('h')),format=Number(url.searchParams.get('format')||0);if(![0,1,2].includes(format))throw Error('Invalid capture format');dimensions(w,h,format);
    const parts=[];let n=0;for await(const part of req){n+=part.length;if(n>MAX)throw Error('Frame too large');parts.push(part);}
    const metrics=Buffer.alloc(32);metrics.writeUInt32LE(0x495a4d35);let values=[];try{const value=JSON.parse(req.headers['x-stream-metrics']||'[]');if(Array.isArray(value))values=value;}catch{}
@@ -338,22 +331,25 @@ async function create({rpc,mapped,directory,persistRenderSettings=false,renderSe
  const url=`http://127.0.0.1:${port}/#${key}`;
  await fs.writeFile(path.join(directory,'pc-screen-local.json'),JSON.stringify({url,port,transport,formats:transport==='tcp'?['BC1-opaque']:['BC1-opaque','RGB565-LE'],defaultSize:[960,540],maximumSize:[1920,1080],viewOnly:true},null,2),{mode:0o600});
  console.log('PC Screen capture: '+url);
+ const commands=new Set();
  function onState(state){
   const action=state.readFloatLE(968),sequence=state.readFloatLE(972);if(closing||!available||!Number.isInteger(sequence)||sequence<1||sequence===lastCommand||![1,2,3,4,5,6,16,17,18,19,20,21,22,24,25,26,27,28,29,30,32,33,34,35,36,37,38].includes(action))return;lastCommand=sequence;
-  (async()=>{
-   const row={action:action===1?'window':action===2?'doom':action===3?'half-life-2':action===4?'player':action===6?'space-rangers':'grand-theft-auto-5',sequence,started:new Date().toISOString()};
+  const task=(async()=>{
+   let commandError;const row={action:action===1?'window':action===2?'doom':action===3?'half-life-2':action===4?'player':action===6?'space-rangers':'grand-theft-auto-5',sequence,started:new Date().toISOString()};
    try{if(action>=24){const mode=action>=32?'handheldResolution':'dockResolution',index=action-(action>=32?32:24),value=index===0?(action>=32?'1280':'1920'):['640','832','960','1280','1600','1920'][index-1];await changeOptions({...options,resolution:'auto',[mode]:value});row.action='resolution';row[mode]=value;}else if(action>=16){await changeOptions({...options,resolution:['auto','640','832','960','1280','1600','1920'][action-16]});row.action='resolution';row.resolution=options.resolution;}else if(action>=2)await changeOptions({...options,launch:action===2?'doom':action===3?'half-life-2':action===4?'player':action===6?'space-rangers':'grand-theft-auto-5'});if((action===1||action===3||action===5)&&!panels.size&&!preview)await openWindow(url);if(action===3||action===5||action===6)gameFocus.arm();row.status='ready';await rpc.write(mapped+HEADER+148,Buffer.from([2,0,0,0]));}
-   catch(error){row.status='failed';row.error=error.message;stream.stats.sourceError=error.message;stream.stats.sourceErrorStack=error.stack;emit();await rpc.write(mapped+HEADER+148,Buffer.from([3,0,0,0])).catch(()=>{});}
+   catch(error){commandError=error;row.status='failed';row.error=error.message;stream.stats.sourceError=error.message;stream.stats.sourceErrorStack=error.stack;emit();await rpc.write(mapped+HEADER+148,Buffer.from([3,0,0,0])).catch(()=>{});}
    row.completed=new Date().toISOString();await fs.writeFile(path.join(directory,'pc-screen-command.json'),JSON.stringify(row,null,2));
-  })().catch(error=>console.error('PC Screen command: '+error.message));
+   if(commandError)throw commandError;
+  })();commands.add(task);task.then(()=>commands.delete(task),()=>commands.delete(task));task.catch(error=>console.error('VacooTube command: '+error.message));return task;
  }
  async function close(){
   if(closePromise)return closePromise;closing=true;routeGate?.close();consoleMonitor?.close();gameFocus.close();controllerHub?.close();
   closePromise=(async()=>{
+   await Promise.allSettled([...commands]);
    await optionQueue.catch(()=>{});await routeGate.drain();
    await stream.invalidate?.('stream-stopped').catch(error=>{stream.stats.closeVisibilityError=error.message;});await stopPump();clearInterval(events);for(const res of panels)res.end();panels.clear();
    const outcomes=await Promise.allSettled([stream.close?.(),remote?.close(),pad?.close()]);remote=null;pad=null;
-   if(!await fs.access(path.join(directory,'result.json')).then(()=>true,()=>false))await rpc.write(mapped+HEADER+96,Buffer.from([4,0,0,0])).catch(()=>{});
+   if(!await fs.access(path.join(directory,'result.json')).then(()=>true,()=>false))await rpc.write(mapped+HEADER+96,Buffer.from([0,0,0,0])).catch(()=>{});
    server.closeIdleConnections();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));
    const error=outcomes.find(r=>r.status==='rejected');if(error)throw error.reason;
   })();return closePromise;

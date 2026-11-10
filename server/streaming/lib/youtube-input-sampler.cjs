@@ -3,7 +3,9 @@
 const {BYTES}=require('./platform.cjs').require('core/services/controller-packet.cjs');
 function start({rpc,mapped,header,onInput,onError=()=>{},hz=60,now=performance.now.bind(performance)}){
  let stopped=false,paused=false,timer,wake,epoch=0,lastAck=-Infinity,latest;
- const interval=1000/hz,ackGrace=interval+2,report={targetHz:hz,samples:0,ackSamples:0,suppressedReads:0,staleStates:0,lastReadMs:0,maxReadMs:0};
+ // Frame ACKs already carry fresh input. Tolerate normal frame pacing/jitter
+ // before falling back to RPC; a 60 Hz timer must not compete with PCM refills.
+ const interval=1000/hz,ackGrace=Math.max(interval+2,100),report={targetHz:hz,samples:0,ackSamples:0,suppressedReads:0,staleStates:0,lastReadMs:0,maxReadMs:0};
  const spans=[{address:mapped+128,length:56},{address:mapped+0x7f0280,length:320},{address:mapped+0x700004,length:4},{address:mapped+header+96,length:8}];
  const wait=delay=>new Promise(resolve=>{wake=resolve;timer=setTimeout(resolve,delay);});
  function deliver(packet){

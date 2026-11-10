@@ -212,7 +212,6 @@ function uploader({rpc,mapped,video={base:mapped+S.SLOT,stride:S.STRIDE,capacity
   try{
    stats.requests=(stats.requests||0)+1;stats.lastInputAt=new Date().toISOString();
    const observed=observe(),{network}=observed,changed=transition(observed);if(changed)throw changed;
-   if(last&&now()-lastVerifiedActivity>=350)await dark('source-freshness-heartbeat-expired');
    // A still image must continue through recovery. Otherwise its first failed
    // upload leaves every subsequent identical frame skipped forever.
    if(!stats.paused&&!stats.awaitingFreshFrame&&!stats.waitingForMainConnection&&!controlsEnabled()&&!keepAlive()&&!native?.isWireCommitted?.(prepared)&&last&&last.w===w&&last.h===h&&last.format===format&&last.bytes.equals(bytes)){await native?.discardPrepared?.(prepared);stats.unchanged++;if(!closing&&gateVisible===true&&now()-lastHeartbeat>=heartbeatMs){const written=await onHeartbeat();if(written!==false){lastHeartbeat=now();lastVerifiedActivity=lastHeartbeat;stats.sourceHeartbeats=(stats.sourceHeartbeats||0)+1;}}if(Date.now()-lastSave>1000){await save(stats);lastSave=Date.now();}return {skipped:true,...stats};}

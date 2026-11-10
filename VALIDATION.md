@@ -42,3 +42,10 @@ The BC1 JavaScript codec and WASM binary were compared byte-for-byte with the ea
 - The updated compute/fragment overlay shaders compiled successfully.
 - An isolated, offline Electron fixture switched Classic → Advanced → Classic using the real application-host replacement path and actual BC1 encoders. It produced 720p frames with both engines, resized Advanced to 480p and preserved 480p on the return to Classic. The player, trusted-touch path and nonzero source audio stayed available; the audio sink was not closed during switching. A mock acknowledged transport replaced the physical Switch receiver, so this does not certify an actual console thread join or hardware FPS.
 - The combined dependency audit covers 49 module-local files plus the declared public IZ2S core APIs; no installed module dependency is introduced.
+
+## IZ2S Platform 0.22 package update
+
+- Rebuilt the module-owned console shaders/font with the published 0.22 SDK.
+- Source/descriptor checks and installation into a clean isolated platform copy passed.
+- 33 module tests passed, including bounded adaptive PCM playback under modeled 35 ms release and 65 ms append delays.
+- These are local software/package checks; no new physical-console session or FPS/audio quality qualification is claimed.
