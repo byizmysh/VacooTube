@@ -4,6 +4,10 @@
 
 VacooTube is a video-player project for **Switch 2 / NS2**, running on a Linux PC and controlled from the console through **[IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform)** and **IZlauncher**. It uses a console/TV-style YouTube interface with touch and controller input.
 
+> **Requires [IZ2S Platform](https://github.com/byizmysh/IZ2S-Platform) and IZlauncher.** Install [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) first and follow its [setup guide](https://github.com/byizmysh/IZ2S-Platform#installation). Keep the platform running on the PC and the console session connected during streaming.
+
+VacooTube is an optional platform module, downloaded separately from [VacooTube Releases](https://github.com/byizmysh/VacooTube/releases/latest). It is not bundled with IZ2S Platform 0.22. Its BlitBun streaming engine is included; a separate BlitBun installation is not needed.
+
 **This is a fork of [VacuumTube](https://github.com/shy1132/VacuumTube), adapted for NS2 and IZ2S.** The application source is included in `app/`; original copyright/MIT terms are preserved in `app/LICENSE`, and source revision/changes are recorded in [THIRD_PARTY.json](THIRD_PARTY.json).
 
 This is not a native standalone Switch executable, a new console connection engine or a console emulator. The desktop application executes on the PC; the existing console session presents its video/audio and supplies input.

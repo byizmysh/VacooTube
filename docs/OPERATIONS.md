@@ -2,7 +2,7 @@
 
 ## Installation order
 
-Install IZ2S Platform, then VacooTube. Load VacooTube in the console catalog. Its ID is vacootube and its complete installation lives in modules/VacooTube/. The BlitBun engine is bundled; the separate blitbun module is not required. The File Exchange-only base release does not include VacooTube automatically.
+Install [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0), complete its [console setup](https://github.com/byizmysh/IZ2S-Platform#installation), then install VacooTube. Keep IZ2S Platform running on the PC and the IZlauncher console session connected during playback. Load VacooTube in the console catalog. Its ID is vacootube and its complete installation lives in modules/VacooTube/. The BlitBun engine is bundled; the separate blitbun module is not required. IZ2S Platform 0.22 does not bundle VacooTube; install it separately.
 
 ## What “all files” means
 
