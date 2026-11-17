@@ -5,7 +5,7 @@ Prepared as a separate VacooTube repository with module ID `vacootube`. This rec
 - Source syntax and declared module/console assets checked against IZ2S API 1.
 - Installed into an isolated clean IZ2S release copy; module/package checks passed.
 - Accidental replacement without --replace refused. Intentional update retained private preferences and pinned snapshots; the previous module was backed up.
-- Generated IZM inventory checked for exclusion of runtime binaries, npm dependency trees and private profiles.
+- PC archive inventory checked for exclusion of runtime binaries, npm dependency trees and private profiles.
 - Branded console and application icons exported with real alpha. Existing codec, receiver ABI and controller gesture IDs are retained.
 - Local offscreen fixture produced a fresh frame with hidden/offscreen flags, trusted touch events and nonzero application audio through a temporary silent sink.
 - Application config, microphone-permission and managed-update tests passed.

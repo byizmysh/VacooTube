@@ -1,6 +1,6 @@
 {
   "name": "vacootube",
-  "version": "1.5.3",
+  "version": "1.5.7",
   "private": true,
   "description": "Independent video player for Switch 2 · touch and controller input",
   "engines": {

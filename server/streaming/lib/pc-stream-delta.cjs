@@ -49,8 +49,10 @@ async function receiver({rpc,mapped,video={base:mapped+S.SLOT,stride:S.STRIDE,ca
  }
  async function configure(w,h,format){
   if(thread!==null)await stopWorker();if(retained)throw Error('Delta receiver retained');closing=false;transportError=null;
-  const host=process.env.HB_STREAM_HOST||'10.42.0.1';if(!net.isIPv4(host)||host==='0.0.0.0')throw Error('Invalid PC stream host');
   if(await api.result('netAddress',[api.base+2048]))throw Error('No console IP');const consoleIP=[...await api.read(2048,4)].join('.');report.consoleIP=consoleIP;
+  const {routeTo}=require('./platform.cjs').require('core/platform/network.cjs');
+  const host=process.env.HB_STREAM_HOST||(await routeTo(consoleIP)).address;
+  if(!net.isIPv4(host)||host==='0.0.0.0')throw Error('Invalid PC stream host');
   server=net.createServer({allowHalfOpen:true},socket=>{
    socket.on('error',e=>{if(waiting?.peer===socket)disconnect(e);});
    if(closing||socket.remoteAddress!==consoleIP||sockets.size>=1){socket.destroy();return;}

@@ -6,7 +6,7 @@ Install [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/
 
 ## What “all files” means
 
-The repository contains the complete fork/integration source, console files and installers. A ready architecture-labelled offline release additionally contains Electron and prepared production npm dependencies under runtime/. Git and IZM intentionally do not contain those bulky mutable dependencies. Neither form includes your account/profile. IZ2S and a working engine session are external requirements, not duplicated inside this project.
+The repository contains the complete fork/integration source, console files and installers. A ready architecture-labelled offline release additionally contains Electron and prepared production npm dependencies under runtime/. Git and module archive intentionally do not contain those bulky mutable dependencies. Neither form includes your account/profile. IZ2S and a working engine session are external requirements, not duplicated inside this project.
 
 ## Runtime preparation fails
 

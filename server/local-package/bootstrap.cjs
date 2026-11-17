@@ -17,6 +17,7 @@ async function ensureInput(wc){
 }
 app.on('browser-window-created',(_event,w)=>{
  if(win)return;win=w;w.setContentSize(WIDTH,HEIGHT);w.setResizable(false);w.webContents.setBackgroundThrottling(false);
+ if(process.env.IZ_YOUTUBE_MUTED==='1')w.webContents.setAudioMuted(true);
  // Upstream's ready-to-show and second-instance handlers cannot expose this window.
  for(const name of ['show','showInactive','focus','setFullScreen','setAlwaysOnTop'])w[name]=()=>{};
  w.webContents.setFrameRate(240);w.webContents.setWindowOpenHandler(()=>({action:'deny'}));

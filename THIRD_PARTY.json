@@ -17,7 +17,7 @@
     "name": "Electron",
     "version": "44.5.1",
     "source": "https://github.com/electron/electron",
-    "notices": "Included with the separately installed runtime"
+    "notices": "LICENSE.electron.txt and LICENSES.chromium.html in each bundled runtime"
   },
   "streamingEngine": {
     "name": "BlitBun",
@@ -38,11 +38,15 @@
     "details": "LICENSE-SCOPE.md"
   },
   "consoleFont": {
-    "name": "DejaVu Sans Mono",
+    "name": "DejaVu Sans and DejaVu Sans Mono",
     "source": "https://dejavu-fonts.github.io/",
     "license": "Bitstream Vera license; DejaVu changes are public domain",
     "notice": "assets/fonts/LICENSE.txt",
-    "font": "assets/fonts/DejaVuSansMono.ttf",
-    "derivedAsset": "switch/assets/font.bin"
+    "derivedAsset": "switch/assets/font.bin",
+    "fonts": [
+      "assets/fonts/DejaVuSans.ttf",
+      "assets/fonts/DejaVuSans-Bold.ttf",
+      "assets/fonts/DejaVuSansMono.ttf"
+    ]
   }
 }

@@ -1,9 +1,9 @@
 {
   "format": "izlauncher.module",
-  "version": "1.5.3",
+  "version": "1.5.7",
   "id": "vacootube",
   "name": "VacooTube",
-  "moduleVersion": "1.5.3",
+  "moduleVersion": "1.5.7",
   "switch": {
     "entry": "switch/app.json",
     "files": [
@@ -33,13 +33,17 @@
       "switch/shaders/hb.glsl",
       "switch/shaders/menu-draw.glsl",
       "switch/shaders/menu-input.glsl",
+      "switch/shaders/overlay-font.glsl",
       "switch/shaders/pad-merge.glsl",
       "switch/shaders/pc-screen-draw.glsl",
       "switch/shaders/pc-screen-input.glsl",
       "switch/shaders/pc-screen.glsl",
-      "switch/shaders/vacootube-menu.glsl"
+      "switch/shaders/standalone.glsl",
+      "switch/shaders/vacootube-menu.glsl",
+      "switch/sd/vacootube.iza"
     ],
-    "abi": 1
+    "abi": 1,
+    "sdImage": "switch/sd/vacootube.iza"
   },
   "server": {
     "entry": "server/entry.cjs",
@@ -51,26 +55,6 @@
       "sessionHook": "modules/vacootube/server/session-hook.cjs",
       "standalone": "modules/vacootube/server/standalone.cjs"
     },
-    "localPackages": [
-      {
-        "id": "vacootube",
-        "path": "server/local-package",
-        "entry": "server/local-package/index.cjs",
-        "installer": "server/local-package/install.cjs",
-        "requiredFiles": {
-          "linux-x64": [
-            "runtime/VacooTube-x64/vacootube",
-            "runtime/VacooTube-x64/resources/app/main.cjs",
-            "runtime/source.json"
-          ],
-          "linux-arm64": [
-            "runtime/VacooTube-arm64/vacootube",
-            "runtime/VacooTube-arm64/resources/app/main.cjs",
-            "runtime/source.json"
-          ]
-        }
-      }
-    ],
     "runtime": "node",
     "assets": [
       "server/local-package/test-fixture.html",
@@ -82,7 +66,7 @@
       {
         "command": "parec",
         "purpose": "Owned silent-sink audio capture",
-        "optional": false,
+        "optional": true,
         "platforms": [
           "linux-x64",
           "linux-arm64"
@@ -91,7 +75,7 @@
       {
         "command": "pactl",
         "purpose": "Owned silent audio sink",
-        "optional": false,
+        "optional": true,
         "platforms": [
           "linux-x64",
           "linux-arm64"
@@ -100,7 +84,7 @@
       {
         "command": "python3",
         "purpose": "Safe official Electron archive extraction",
-        "optional": false,
+        "optional": true,
         "platforms": [
           "linux-x64",
           "linux-arm64"
@@ -117,13 +101,12 @@
       }
     ]
   },
-  "package": "vacootube.izm",
+  "package": "vacootube.module.zip",
   "legacy": {
     "appFolder": "vacootube",
     "packageNames": [
       "youtube.izs",
-      "youtube.izp",
-      "youtube.izm"
+      "youtube.izp"
     ],
     "moduleIds": [
       "youtube"

@@ -8,9 +8,12 @@
 __pycache__/
 *.pyc
 *.log
-*.izm
+*.module.zip
 checksums.json
 *.tmp
 .env
 *.key
 *.pem
+
+/FILES.sha256
+/release.json

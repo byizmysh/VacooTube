@@ -24,12 +24,15 @@ async function create(directory,{launch=spawn,findAudio=audioSource.target,locat
  // Discovery and owned sink setup are independent. Await both even on failure:
  // an asynchronously created sink must never escape a failed startup.
  const initialized=await Promise.allSettled([Promise.resolve().then(locate),Promise.resolve().then(createSink)]);
- const failure=initialized.find(result=>result.status==='rejected');
- if(failure){if(initialized[1].status==='fulfilled')await initialized[1].value.close();throw failure.reason;}
- const runtime=initialized[0].value,sink=initialized[1].value;
+ if(initialized[0].status==='rejected'){
+  if(initialized[1].status==='fulfilled')await initialized[1].value.close();
+  throw initialized[0].reason;
+ }
+ const runtime=initialized[0].value;
+ const sink=initialized[1].status==='fulfilled'?initialized[1].value:null;
  let closed=false,closePromise,audioChild,audioStarting=false,framePending=null,requestSequence=0,frameDemand=false,waiting,availability,child,log,resizePending,resizeSequence=0;
  const freshnessListeners=new Set();
- const report={source:'vacootube',pcAudio:'silent',audioSink:sink.name,audioModule:sink.module,profile,version:runtime.version,scope:'owned VacooTube window and application audio',frames:0,sourceEpoch:0},video={latest:null,frames:0},audio=new PcmQueue();
+ const report={source:'vacootube',pcAudio:'silent',audioSink:sink?.name,audioModule:sink?.module,audioMuted:!sink,audioError:sink?undefined:initialized[1].reason?.message,profile,version:runtime.version,scope:'owned VacooTube window and application audio',frames:0,sourceEpoch:0},video={latest:null,frames:0},audio=new PcmQueue();
  const save=()=>fs.writeFile(path.join(directory,'youtube-capture.json'),JSON.stringify({...report,audio:{received:audio.received,nonzero:audio.nonzero,dropped:audio.dropped}},null,2));
  const notify=()=>availability?.notify();
  const send=m=>{if(!closed&&child&&!child.stdio[3].destroyed&&child.stdio[3].writableLength<8192){child.stdio[3].write(JSON.stringify(m)+'\n');return true;}return false;};
@@ -57,15 +60,15 @@ async function create(directory,{launch=spawn,findAudio=audioSource.target,locat
    report.profile=next;report.captureSuspended=!!report.routePaused;delete report.error;await save();
   }finally{report.reconfiguring=false;notify();issueFrame();}
  }
- async function startAudio(){if(closed||report.exited||audioChild||audioStarting||!child?.pid)return;audioStarting=true;try{const target={device:sink.name+'.monitor',scope:'owned YouTube sink'};if(closed)return;audioChild=launch('/usr/bin/parec',audioSource.sinkArgs(sink.name),{stdio:['ignore','pipe','pipe']});report.audioTarget=target;audioChild.stdout.on('data',b=>audio.push(b));audioChild.stderr.on('data',b=>report.audioError=b.toString().slice(-1000));audioChild.on('error',e=>report.audioError=e.message);audioChild.on('exit',()=>{audioChild=null;});}catch(e){report.audioError=e.message;}finally{audioStarting=false;}}
+ async function startAudio(){if(!sink||closed||report.exited||audioChild||audioStarting||!child?.pid)return;audioStarting=true;try{const target={device:sink.name+'.monitor',scope:'owned YouTube sink'};if(closed)return;audioChild=launch('/usr/bin/parec',audioSource.sinkArgs(sink.name),{stdio:['ignore','pipe','pipe']});report.audioTarget=target;audioChild.stdout.on('data',b=>audio.push(b));audioChild.stderr.on('data',b=>report.audioError=b.toString().slice(-1000));audioChild.on('error',e=>report.audioError=e.message);audioChild.on('exit',()=>{audioChild=null;});}catch(e){report.audioError=e.message;}finally{audioStarting=false;}}
  async function stop(p,grace=0){if(!p||p.exitCode!==null||p.signalCode)return;if(grace)await new Promise(resolve=>{const t=setTimeout(resolve,grace);p.once('exit',()=>{clearTimeout(t);resolve();});});if(p.exitCode!==null||p.signalCode)return;p.kill('SIGTERM');await new Promise(resolve=>{const t=setTimeout(()=>{p.kill('SIGKILL');resolve();},1500);p.once('exit',()=>{clearTimeout(t);resolve();});});}
  let timer;
- function close(){if(closePromise)return closePromise;send({type:'close'});closed=true;report.closed=true;freshnessListeners.clear();availability?.close();resizePending?.reject(Error('VacooTube closed during resize'));clearInterval(timer);child?.stdio[3].end();closePromise=(async()=>{await Promise.all([stop(audioChild),stop(child,2000)]);audio.clear();try{await sink.close();}catch(e){report.audioCleanupError=e.message;throw e;}finally{await save();}})();return closePromise;}
+ function close(){if(closePromise)return closePromise;send({type:'close'});closed=true;report.closed=true;freshnessListeners.clear();availability?.close();resizePending?.reject(Error('VacooTube closed during resize'));clearInterval(timer);child?.stdio[3].end();closePromise=(async()=>{await Promise.all([stop(audioChild),stop(child,2000)]);audio.clear();try{await sink?.close();}catch(e){report.audioCleanupError=e.message;throw e;}finally{await save();}})();return closePromise;}
  try{
   availabilityFactory??=require('../streaming/lib/frame-availability.cjs').create;
   availability=availabilityFactory(()=>({frame:video.latest,sourceEpoch:report.sourceEpoch,closed:report.closed,hidden:false,suspended:report.captureSuspended,error:report.error}));
   log=await fs.open(path.join(directory,'youtube-host.log'),'a',0o600);
-  try{child=launch(runtime.binary,[],{cwd:__dirname,env:{...process.env,...sink.env,IZ_YOUTUBE_MODULE_ROOT:__dirname,IZ_VACOOTUBE_RENDER_HEIGHT:String(profile.height),IZ_YOUTUBE_APP_SOURCE:runtime.app,IZ_YOUTUBE_PROFILE_DIRECTORY:path.join(require('../platform.cjs').home,'data/profile'),...(selfTest?{IZ_YOUTUBE_SELF_TEST:'1'}:{})},stdio:['ignore','pipe',log.fd,'pipe','pipe']});}finally{await log.close();}
+  try{child=launch(runtime.binary,[],{cwd:__dirname,env:{...process.env,...sink?.env,IZ_YOUTUBE_MUTED:sink?'0':'1',IZ_YOUTUBE_MODULE_ROOT:__dirname,IZ_VACOOTUBE_RENDER_HEIGHT:String(profile.height),IZ_YOUTUBE_APP_SOURCE:runtime.app,IZ_YOUTUBE_PROFILE_DIRECTORY:path.join(require('../platform.cjs').home,'data/profile'),...(selfTest?{IZ_YOUTUBE_SELF_TEST:'1'}:{})},stdio:['ignore','pipe',log.fd,'pipe','pipe']});}finally{await log.close();}
   report.pid=child.pid;
   const receive=frameReader(video,report,{accept:frame=>{if(report.captureSuspended||report.reconfiguring||frame.w!==report.profile.width||frame.h!==report.profile.height||frame.timestamped&&frame.requestId!==framePending?.id)return false;report.lastRequestMs=framePending?performance.now()-framePending.at:0;framePending=null;return true;},onFrame:notify});
   child.stdio[4].on('data',b=>{try{receive(b);}catch(e){report.error=e.message;notify();}});

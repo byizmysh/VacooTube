@@ -78,8 +78,7 @@ float streamHudValueWidth(uint raw,bool decimal){
  int n=whole>=10000u?5:whole>=1000u?4:whole>=100u?3:whole>=10u?2:1;
  return float(n+(decimal?2:0))*30.0;
 }
-vec3 streamHud(vec3 col,vec2 p){
- if((c.atlas[SB+24u]&4u)==0u)return col;
+vec3 streamHudValues(vec3 col,vec2 p){
  // Keep the text crisp at 80% scale; let the game show through the backdrop.
  p=vec2(24)+(p-vec2(16))/.8;
  float edge=box(p,vec2(248,142),vec2(224,118),10);
@@ -88,10 +87,13 @@ vec3 streamHud(vec3 col,vec2 p){
  const uint labels[5]=uint[5](0x535046u,0x534552u,0x434e45u,0x54454eu,0x54414cu);
  int row=int(floor((p.y-36.0)/42.0));if(row<0||row>=5)return col;float y=42.0+float(row)*42.0;
  col=mix(col,row==0?BLUE:vec3(.88,.92,.88),streamHudLabel(p,vec2(42,y),labels[row]));
- if(c.atlas[SB+26u]!=0x495a4d35u){for(int i=0;i<2;i++)col=mix(col,vec3(.96),streamHudGlyph(p-vec2(158.0+30.0*float(i),y),45u));return col;}
+ if(row!=1&&c.atlas[SB+26u]!=0x495a4d35u){for(int i=0;i<2;i++)col=mix(col,vec3(.96),streamHudGlyph(p-vec2(158.0+30.0*float(i),y),45u));return col;}
  if(row==1){col=mix(col,vec3(.98),streamHudValue(p,vec2(158,y),c.atlas[SB+4u],false));col=mix(col,vec3(.88),streamHudGlyph(p-vec2(170.0+streamHudValueWidth(c.atlas[SB+4u],false),y),88u));col=mix(col,vec3(.98),streamHudValue(p,vec2(212.0+streamHudValueWidth(c.atlas[SB+4u],false),y),c.atlas[SB+5u],false));}
  else{uint value=c.atlas[SB+uint(row==0?27:row+27)];col=mix(col,row==0?BLUE:vec3(.98),streamHudValue(p,vec2(158,y),value,true));if(row>1)col=mix(col,vec3(.88),streamHudLabel(p,vec2(168.0+streamHudValueWidth(value,true),y),0x534du));}
  return col;
+}
+vec3 streamHud(vec3 col,vec2 p){
+ return (c.atlas[SB+24u]&4u)!=0u?streamHudValues(col,p):col;
 }
 float streamStartText(vec2 p,vec2 origin,float size,int label){
  const uint chars[15]=uint[15](83u,84u,65u,82u,84u,87u,73u,78u,68u,79u,87u,68u,79u,79u,77u);

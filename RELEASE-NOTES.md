@@ -1,30 +1,24 @@
-# VacooTube 1.5.3 — IZ2S Platform 0.22
+# VacooTube 1.5.7
 
-- Requires [IZ2S Platform 0.22](https://github.com/byizmysh/IZ2S-Platform/releases/tag/v0.22.0) and a connected console session.
-- Self-contained ABI-1 GPU application with module-owned shaders, font and menu; RAM and SD installation use the same host runtime.
-- Adaptive bounded audio buffering accounts for actual refill latency and reports missed deadlines.
-- Video acknowledgements carry input and route telemetry, removing redundant steady-stream polling and timer-driven display resets.
-- Double R3 returns to the launcher; double Minus opens the module menu. Performance overlay is off by default.
-- Source installation package and portable IZM are included.
-- Linux x64 offline package also includes the player runtime and prepared production dependencies; no separate BlitBun module is needed.
+This release pairs the PC module with a ready-to-install Switch 2 client.
 
-# VacooTube 1.4.1
+- Smaller overlay controls and a dedicated EXIT action.
+- The Switch executable is included in the PC package as an .iza file.
+- The PC module and the Switch executable can also be installed separately.
 
-- Give the render engines clear names: Classic and Advanced.
-- Update the console overlay, status labels and rendering guide consistently.
-- Preserve existing engine selections, default resolution and streaming behavior.
+## Install on the PC
 
-# VacooTube 1.4.0
+Extract the source installer archive. Open a terminal in the extracted folder and run:
 
-First public VacooTube module release for NS2 and IZ2S Platform.
+```sh
+./install.sh --platform "/path/to/iz2s-platform"
+```
 
-- Independent installation under `modules/VacooTube/`; the required BlitBun streaming implementation is bundled.
-- Complete fork application source, controller/touch integration and a silent PC audio path.
-- Classic and Advanced render engines, selectable from the hidden double-Minus console menu.
-- Live render resolutions from 1080p to 240p, defaulting to 720p; source-video quality separately defaults to 480p.
-- Linux x64 offline archive with Electron and prepared production dependencies; a smaller source archive is also available.
-- Real local application screenshots and direct links to this repository and its releases.
+Replace the path with your IZ2S Platform installation folder. Keep IZ2S Platform running on the PC while using VacooTube on Switch.
 
-Requires IZ2S Platform 0.16.0-rc.3 or newer and a working console session. Linux ARM64 is a declared source-install target with incomplete physical validation. Windows and macOS console streaming are unsupported. Local application startup, input/capture, packaging and installation checks do not establish physical-console performance guarantees.
+For the Linux x64 offline archive, add `--with-runtime` to the command. The source installer can download the required runtime dependencies.
 
-The application is a fork of VacuumTube. Original MIT notices and component licenses are retained; independently authored IZMYSH integration uses GPL-2.0-or-later. See COPYRIGHT, LICENSE-SCOPE.md and THIRD_PARTY.json.
+## Install on Switch 2
+
+1. **Through IZ2S:** Connect your Switch 2 to IZ2S Platform on the PC. Open **App library → Add app** and select `vacootube-1.5.7.iza`. Open **Add App** in IZ2S on the Switch to receive and install the file.
+2. **Copy to the SD card:** Open the card on your PC. Create `iz2s/modules/vacootube/` at the root if needed. Copy `vacootube-1.5.7.iza` there and rename it to `launcher.iza`. The final path is `SD:/iz2s/modules/vacootube/launcher.iza`. Reinsert the card and open VacooTube from the IZ2S menu.
